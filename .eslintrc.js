@@ -23,6 +23,7 @@ module.exports = {
   },
   "rules": {
     "no-unused-vars": "off",
+    "no-console": "off",
     "@typescript-eslint/no-unused-vars": "error",
     "react/prop-types": "off",
     "react-hooks/rules-of-hooks": "error",
