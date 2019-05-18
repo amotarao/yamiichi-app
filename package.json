@@ -1,0 +1,82 @@
+{
+  "name": "yamiichi-app",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@emotion/core": "^10.0.10",
+    "@material-ui/core": "^3.9.3",
+    "firebase": "^5.11.0",
+    "query-string": "^6.5.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-router-dom": "^5.0.0",
+    "react-scripts": "3.0.0",
+    "react-transition-group": "^4.0.0",
+    "unstated": "^2.1.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.4",
+    "@storybook/addon-actions": "^5.0.11",
+    "@storybook/addon-knobs": "^5.0.11",
+    "@storybook/addon-links": "^5.0.11",
+    "@storybook/addons": "^5.0.11",
+    "@storybook/react": "^5.0.11",
+    "@types/jest": "^24.0.12",
+    "@types/node": "^11.13.8",
+    "@types/react": "^16.8.15",
+    "@types/react-dom": "^16.8.4",
+    "@types/react-router-dom": "^4.3.2",
+    "@types/react-transition-group": "^2.9.1",
+    "@types/storybook__addon-actions": "^3.4.2",
+    "@types/storybook__addon-knobs": "^5.0.0",
+    "@types/storybook__addon-links": "^3.3.4",
+    "@types/storybook__addons": "^4.1.0",
+    "@types/storybook__react": "^4.0.1",
+    "@typescript-eslint/eslint-plugin": "^1.7.0",
+    "awesome-typescript-loader": "^5.2.1",
+    "babel-loader": "^8.0.5",
+    "eslint": "^5.16.0",
+    "eslint-config-prettier": "^4.2.0",
+    "eslint-plugin-prettier": "^3.0.1",
+    "eslint-plugin-react-hooks": "^1.6.0",
+    "husky": "^2.1.0",
+    "lint-staged": "^8.1.5",
+    "prettier": "^1.17.0",
+    "typescript": "^3.4.5"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "lint": "eslint './src/**/*.{ts,tsx}'",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
