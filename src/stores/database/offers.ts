@@ -1,13 +1,10 @@
 import axios from 'axios';
-import { Container } from 'unstated';
+import { useState, useEffect } from 'react';
+import { createContainer } from 'unstated-next';
 import { firestore } from '../../modules/firebase';
 
 const offersCollection = firestore.collection('offers');
-
-export interface OffersState {
-  isLoading: boolean;
-  items: OfferItemInterface[];
-}
+const teamsCollection = firestore.collection('teams');
 
 export interface OfferItemInterface {
   id: string;
@@ -37,70 +34,67 @@ export interface OfferItemRegistrationInterface {
   periodDuration: number;
 }
 
-export class OffersContainer extends Container<OffersState> {
-  constructor() {
-    super();
-    this.state = {
-      isLoading: true,
-      items: [],
-    };
-    this.onSnapshot();
-  }
+const useOffers = () => {
+  const [isLoading, setLoading] = useState<boolean>(true);
+  const [items, setItems] = useState<OfferItemInterface[]>([]);
+  const [teamId, setTeamId] = useState<string>('');
 
-  onSnapshot = () => {
-    const items: OfferItemInterface[] = [];
+  useEffect(() => {
+    const tmpItems: OfferItemInterface[] = [];
 
-    offersCollection.where('teamRef', '==', firestore.collection('teams').doc('slack:T07GUTWR2')).onSnapshot(
-      async (snapshot) => {
-        await this.setState({
-          ...this.state,
-          isLoading: false,
-        });
+    if (!teamId) {
+      return;
+    }
 
-        snapshot.docChanges().forEach(({ type, doc }) => {
-          const item = {
-            id: doc.id,
-            data: doc.data() as OfferItemDataInterface,
-          };
-          const index = items.findIndex((e) => e.id === item.id);
+    offersCollection.where('teamRef', '==', teamsCollection.doc(teamId)).onSnapshot((snapshot) => {
+      setLoading(false);
 
-          switch (type) {
-            case 'added':
-              items.push(item);
-              break;
-            case 'modified':
-              items.splice(index, 1, item);
-              break;
-            case 'removed':
-              items.splice(index, 1);
-              break;
-            default:
-              break;
-          }
+      snapshot.docChanges().forEach(({ type, doc }) => {
+        const item = {
+          id: doc.id,
+          data: doc.data() as OfferItemDataInterface,
+        };
+        const index = tmpItems.findIndex((e) => e.id === item.id);
 
-          this.setState({
-            ...this.state,
-            items,
-          });
-        });
-      },
-      (error) => {
-        console.error(error);
-      }
-    );
-  };
+        switch (type) {
+          case 'added':
+            tmpItems.push(item);
+            break;
+          case 'modified':
+            tmpItems.splice(index, 1, item);
+            break;
+          case 'removed':
+            tmpItems.splice(index, 1);
+            break;
+          default:
+            break;
+        }
+        setItems([...tmpItems]);
+      });
+    });
+  }, [teamId]);
 
-  getById = (id: string) => {
-    return this.state.items.find((item) => {
+  const getById = (id: string) => {
+    return items.find((item) => {
       return item.id === id;
     });
   };
 
-  create = (data: OfferItemRegistrationInterface, token: string) => {
+  const create = (data: OfferItemRegistrationInterface, token: string) => {
     return axios.post('https://api.yamiichi.app/offer', data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
   };
-}
+
+  return {
+    isLoading,
+    items,
+    setTeamId,
+    getById,
+    create,
+  };
+};
+
+export const OffersContainer = createContainer(useOffers);

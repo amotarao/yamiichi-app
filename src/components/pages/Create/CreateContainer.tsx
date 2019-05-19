@@ -1,36 +1,43 @@
 import React from 'react';
 import { withRouter, RouteComponentProps } from 'react-router';
-import { Subscribe } from 'unstated';
 import { UserContainer } from '../../../stores/user';
 import { OffersContainer } from '../../../stores/database/offers';
 import { Create, CreateProps } from './';
 
 interface Props extends RouteComponentProps, Partial<CreateProps> {}
 
-const CreateContainer: React.FC<Props> = ({ history }) => {
-  return (
-    <Subscribe to={[UserContainer, OffersContainer]}>
-      {(user: UserContainer, offers: OffersContainer) => {
-        if (!user.state.isLoading && !user.state.signedIn) {
-          history.replace('/');
-        }
-        const toDashboard = () => {
-          history.replace('/dashboard');
-        };
-        const isLoading = user.state.isLoading || offers.state.isLoading;
+const CreateInner: React.FC<Props> = ({ history }) => {
+  const { isLoading: userIsLoading, signedIn, user } = UserContainer.useContainer();
+  const { isLoading: offersIsLoading, create } = OffersContainer.useContainer();
 
-        const newProps: CreateProps = {
-          isLoading,
-          user: user.state.user!,
-          create: offers.create,
-          success: toDashboard,
-          cancel: toDashboard,
-        };
-        return <Create {...newProps} />;
+  if (!userIsLoading && !signedIn) {
+    history.replace('/');
+  }
+
+  const isLoading = userIsLoading || offersIsLoading;
+
+  const toDashboard = () => {
+    history.replace('/dashboard');
+  };
+
+  return (
+    <Create
+      {...{
+        isLoading,
+        user: user!,
+        create,
+        success: toDashboard,
+        cancel: toDashboard,
       }}
-    </Subscribe>
+    />
   );
 };
+
+const CreateContainer: React.FC<Props> = (props) => (
+  <OffersContainer.Provider>
+    <CreateInner {...props} />
+  </OffersContainer.Provider>
+);
 
 const CreateContainerWithRouter = withRouter(CreateContainer);
 

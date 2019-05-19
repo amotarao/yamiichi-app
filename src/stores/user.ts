@@ -1,44 +1,30 @@
-import { Container } from 'unstated';
+import { useState, useEffect } from 'react';
+import { createContainer } from 'unstated-next';
 import { auth } from '../modules/firebase';
 
-export interface UserState {
-  isLoading: boolean;
-  signedIn: boolean;
-  user: firebase.User | null;
-}
+const useUser = () => {
+  const [isLoading, setLoading] = useState<boolean>(true);
+  const [signedIn, setSignedIn] = useState<boolean>(false);
+  const [user, setUser] = useState<firebase.User | null>(null);
 
-export class UserContainer extends Container<UserState> {
-  constructor() {
-    super();
-    this.state = {
-      isLoading: true,
-      signedIn: false,
-      user: null,
-    };
-    this.onAuthStateChanged();
-  }
-
-  onAuthStateChanged = () => {
-    auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        await this.setState({
-          ...this.state,
-          isLoading: false,
-          signedIn: true,
-          user,
-        });
-      } else {
-        await this.setState({
-          ...this.state,
-          isLoading: false,
-          signedIn: false,
-          user: null,
-        });
-      }
+  useEffect(() => {
+    auth.onAuthStateChanged((user) => {
+      setUser(user);
+      setSignedIn(Boolean(user));
+      setLoading(false);
     });
+  }, []);
+
+  const signIn = async (token: string) => await auth.signInWithCustomToken(token);
+  const signOut = async () => await auth.signOut();
+
+  return {
+    isLoading,
+    signedIn,
+    user,
+    signIn,
+    signOut,
   };
+};
 
-  signIn = async (token: string) => await auth.signInWithCustomToken(token);
-
-  signOut = async () => await auth.signOut();
-}
+export const UserContainer = createContainer(useUser);

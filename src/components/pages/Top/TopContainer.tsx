@@ -1,21 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router';
-import { Subscribe } from 'unstated';
 import { UserContainer } from '../../../stores/user';
 import { Top, TopProps } from './';
 
 interface Props extends RouteComponentProps, Partial<TopProps> {}
 
-const TopContainer: React.FC<Props> = ({ history, ...props }) => {
+const TopContainer: React.FC<Props> = ({ history }) => {
+  const { isLoading, signedIn } = UserContainer.useContainer();
+
+  useEffect(() => {
+    if (!isLoading && signedIn) {
+      console.log('/dashboard');
+      history.replace('/dashboard');
+    }
+  }, [history, signedIn, isLoading]);
+
   return (
-    <Subscribe to={[UserContainer]}>
-      {(user: UserContainer) => {
-        if (!user.state.isLoading && user.state.signedIn) {
-          history.replace('/dashboard');
-        }
-        return <Top {...props} {...user.state} {...user} />;
+    <Top
+      {...{
+        isLoading,
       }}
-    </Subscribe>
+    />
   );
 };
 
