@@ -20,6 +20,7 @@ module.exports = {
   "env": {
     "browser": true,
     "node": true,
+    "jest": true,
   },
   "rules": {
     "no-unused-vars": "off",
