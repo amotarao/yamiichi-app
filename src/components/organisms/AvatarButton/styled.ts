@@ -4,7 +4,7 @@ export const ButtonStyle = css`
   && {
     padding: 4px;
     position: fixed;
-    top: 16px;
+    top: 8px;
     right: 24px;
   }
 `;
