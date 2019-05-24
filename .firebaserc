@@ -1,5 +1,17 @@
 {
   "projects": {
     "default": "yamiichi-app"
+  },
+  "targets": {
+    "yamiichi-app": {
+      "hosting": {
+        "api": [
+          "yamiichi-api"
+        ],
+        "app": [
+          "yamiichi-app"
+        ]
+      }
+    }
   }
 }
