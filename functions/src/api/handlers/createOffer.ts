@@ -1,6 +1,6 @@
 import * as moment from 'moment';
 import { Request, Response } from 'express';
-import { auth, firestore } from '../modules/firebase';
+import { auth, firestore } from '../../modules/firebase';
 
 const usersCollection = firestore.collection('users');
 const offersCollection = firestore.collection('offers');

@@ -2,7 +2,7 @@ import * as functions from 'firebase-functions';
 import { WebClient } from '@slack/web-api';
 import { Request, Response } from 'express';
 import { FirebaseError } from 'firebase-admin';
-import { auth, firestore } from '../modules/firebase';
+import { auth, firestore } from '../../modules/firebase';
 
 const usersCollection = firestore.collection('users');
 const teamsCollection = firestore.collection('teams');
