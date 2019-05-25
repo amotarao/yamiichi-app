@@ -64,6 +64,7 @@ export default async (req: Request, res: Response) => {
 
   if (errors.length) {
     res.status(422).json({ errors });
+    return;
   }
 
   const now = moment();
