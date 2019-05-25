@@ -46,12 +46,7 @@ export default async (req: Request, res: Response) => {
     slackTeamId: team_id,
     slackTeamName: team_name,
   };
-  const { exists: teamExists } = await teamDoc.get();
-  if (teamExists) {
-    teamDoc.update(teamData);
-  } else {
-    teamDoc.set(teamData);
-  }
+  teamDoc.set(teamData, { merge: true });
 
   const uid = `slack:${team_id}-${user_id}`;
   const userDoc = usersCollection.doc(uid);
@@ -61,12 +56,7 @@ export default async (req: Request, res: Response) => {
     slackUserId: user_id,
     slackTeamRef: teamDoc,
   };
-  const { exists: userExists } = await userDoc.get();
-  if (userExists) {
-    userDoc.update(userData);
-  } else {
-    userDoc.set(userData);
-  }
+  userDoc.set(userData, { merge: true });
 
   const Client = new WebClient(access_token as string);
   const { display_name, image_192 } = ((await Client.users.profile.get()) as {
