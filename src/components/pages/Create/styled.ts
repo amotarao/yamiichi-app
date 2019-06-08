@@ -2,7 +2,7 @@ import css from '@emotion/css';
 
 export const PaperStyle = css`
   && {
-    margin: 24px auto;
+    margin: auto;
     max-width: 400px;
     padding: 16px;
   }

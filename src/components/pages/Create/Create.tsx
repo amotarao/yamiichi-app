@@ -109,8 +109,8 @@ export const Create: React.FC<CreateProps> = ({ className, user, create, success
               label="詳細"
               value={description}
               multiline
-              rows={3}
-              rowsMax={3}
+              rows={1}
+              rowsMax={5}
               onChange={(event) => {
                 const value = event.target.value;
                 setDescription(value);
