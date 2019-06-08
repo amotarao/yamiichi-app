@@ -4,15 +4,13 @@ import { Button, Paper } from '@material-ui/core';
 import React from 'react';
 import { OfferItemInterface } from '../../../stores/database/offers';
 import { PriceInfo } from './PriceInfo';
+import { RemainingTime } from './RemainingTime';
 import {
   WrapperStyle,
   TextThumbnailStyle,
   MetaAreaStyle,
   UserAreaStyle,
-  // UserImageStyle,
-  // UserNameStyle,
   ActionAreaStyle,
-  RemainingTimeStyle,
   TitleStyle,
   UserStyle,
   MainAreaStyle,
@@ -45,7 +43,7 @@ export const OfferCard: React.FC<OfferItemInterface> = ({ data: { ...props } }) 
           )}
         </div>
         <div css={ActionAreaStyle}>
-          <p css={RemainingTimeStyle}>00:00:00</p>
+          <RemainingTime date={props.periodDate.toDate()} />
           <Button css={ActionButtonStyle} variant="text" color="primary">
             入札
           </Button>

@@ -135,14 +135,6 @@ export const ActionAreaStyle = css`
   }
 `;
 
-export const RemainingTimeStyle = css`
-&& {
-      flex: 1 1 auto;
-      font-size: 1.2rem;
-    }
-  }
-`;
-
 export const ActionButtonStyle = css`
   && {
     margin-left: 8px;
