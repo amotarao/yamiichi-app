@@ -69,8 +69,6 @@ export default async (req: Request, res: Response) => {
 
   const now = moment();
 
-  const { slackTeamRef } = (await usersCollection.doc(uid).get()).data() as { slackTeamRef: FirebaseFirestore.DocumentReference };
-
   await offersCollection.add({
     title,
     description: description || '',
@@ -78,7 +76,7 @@ export default async (req: Request, res: Response) => {
     active: true,
     authorRef: usersCollection.doc(uid),
     lastBidderRef: null,
-    teamRef: slackTeamRef,
+    teamRef: null, // Memo: will be updated on Firestore Trigger
     initialPrice,
     hasMaxPrice: maxPrice >= 0,
     maxPrice: maxPrice >= 0 ? maxPrice : -1,
