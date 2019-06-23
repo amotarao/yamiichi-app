@@ -21,9 +21,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ isLoading }) => {
           <Typography variant="h6" color="inherit" component="h1">
             Dashboard
           </Typography>
+          <AvatarButtonContainer />
         </Toolbar>
       </AppBar>
-      <AvatarButtonContainer />
       <OffersListContainer css={ListStyle} />
       <Fab css={FabStyle} color="primary" aria-label="Add" component={(props) => <Link to="/create" {...props} />}>
         <Icon>add</Icon>
