@@ -1,7 +1,7 @@
-import * as functions from 'firebase-functions';
 import { WebClient } from '@slack/web-api';
 import { Request, Response } from 'express';
 import { FirebaseError } from 'firebase-admin';
+import { env } from '../../modules/env';
 import { auth, firestore } from '../../modules/firebase';
 
 const usersCollection = firestore.collection('users');
@@ -16,8 +16,8 @@ export default async (req: Request, res: Response) => {
 
   const ClientWithoutToken = new WebClient();
   const result = await ClientWithoutToken.oauth.access({
-    client_id: functions.config().app!.slack_client_id!,
-    client_secret: functions.config().app!.slack_client_secret!,
+    client_id: env.slack_client_id!,
+    client_secret: env.slack_client_secret!,
     code,
   });
   console.log(result);
@@ -83,5 +83,5 @@ export default async (req: Request, res: Response) => {
     });
   const token = await auth.createCustomToken(uid);
 
-  res.redirect(302, `${functions.config().app!.auth_redirect_url!}?token=${token}`);
+  res.redirect(302, `${env.auth_redirect_url!}?token=${token}`);
 };
