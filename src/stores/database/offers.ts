@@ -22,8 +22,8 @@ export interface OfferItemDataInterface {
   hasMaxPrice: boolean;
   maxPrice: number;
   currentPrice: number;
-  registrationDate: Date;
-  periodDate: Date;
+  registrationDate: firebase.firestore.Timestamp;
+  periodDate: firebase.firestore.Timestamp;
 }
 
 export interface OfferItemRegistrationInterface {
