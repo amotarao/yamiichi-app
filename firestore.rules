@@ -1,0 +1,30 @@
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isLoggedIn() {
+      return request.auth != null;
+    }
+    function isMe(userID) {
+      return isLoggedIn() && request.auth.uid == userID;
+    }
+    function getUserDoc(userID) {
+      return get(/databases/$(database)/documents/users/$(userID));
+    }
+    function getTeamRefFromUser(userID) {
+      return getUserDoc(userID).data.slackTeamRef;
+    }
+
+    allow read: if isLoggedIn();
+
+    match /offers/{offerID} {
+      allow read: if resource.data.teamRef == getTeamRefFromUser(request.auth.uid);
+
+      match /bidars/{bidarID} {
+        allow create: if true;
+      }
+    }
+
+    match /users/{userID} {
+      allow read: if isMe(userID);
+    }
+  }
+}
