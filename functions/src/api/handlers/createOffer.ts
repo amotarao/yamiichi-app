@@ -80,7 +80,7 @@ export default async (req: Request, res: Response) => {
     initialPrice,
     hasMaxPrice: maxPrice >= 0,
     maxPrice: maxPrice >= 0 ? maxPrice : -1,
-    currentPrice: initialPrice,
+    currentPrice: -1,
     registrationDate: now.toDate(),
     periodDate: now.add(periodDuration, 's').toDate(),
   });
