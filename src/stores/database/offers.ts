@@ -27,10 +27,10 @@ export interface OfferItemDataInterface {
 }
 
 export interface OfferItemRegistrationInterface {
-  title: string;
-  description?: string;
-  initialPrice: number;
-  maxPrice?: number;
+  title: OfferItemDataInterface['title'];
+  description?: OfferItemDataInterface['description'];
+  initialPrice: OfferItemDataInterface['initialPrice'];
+  maxPrice?: OfferItemDataInterface['maxPrice'];
   periodDuration: number;
 }
 
