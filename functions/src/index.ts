@@ -2,7 +2,7 @@ import * as functions from 'firebase-functions';
 import apiApp from './api';
 import createOffer from './firestore/createOffer';
 import updateOffer from './firestore/updateOffer';
-import bidOffer from './firestore/bidOffer';
+import createOfferBider from './firestore/createOfferBider';
 
 export const api = functions
   .runWith({
@@ -19,7 +19,7 @@ export const firestoreUpdateOffer = functions
   .region('asia-northeast1')
   .firestore.document('offers/{offerId}')
   .onUpdate(updateOffer);
-export const firestoreBidOffer = functions
+export const firestoreCreateOfferBider = functions
   .region('asia-northeast1')
   .firestore.document('offers/{offerId}/biders/{biderId}')
-  .onCreate(bidOffer);
+  .onCreate(createOfferBider);

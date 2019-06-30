@@ -26,7 +26,13 @@ export interface OfferItemBiderItemDataInterface {
   bidDate: FirebaseFirestore.Timestamp;
   bidderRef: FirebaseFirestore.DocumentReference;
   price: number;
-  rejected?: boolean;
+}
+
+export interface OfferItemBiderRegistrationInterface {
+  price: OfferItemBiderItemDataInterface['price'];
+  tmp: {
+    uid: string;
+  };
 }
 
 export interface UserItemDataInterface {

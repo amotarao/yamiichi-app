@@ -24,8 +24,7 @@ import {
 
 export interface OfferCardProps {
   item: OfferItemInterface;
-  user: firebase.User;
-  bid: (data: OfferItemBiderInterface, token: string) => Promise<any>;
+  bid: (data: OfferItemBiderInterface) => Promise<any>;
 }
 
 export const OfferCard: React.FC<OfferCardProps> = ({
@@ -33,7 +32,6 @@ export const OfferCard: React.FC<OfferCardProps> = ({
     id,
     data: { ...props },
   },
-  user,
   bid: bidAction,
 }) => {
   const [isOpenedBidSelector, openBidSelector, closeBidSelector] = useBool(false);
@@ -41,14 +39,10 @@ export const OfferCard: React.FC<OfferCardProps> = ({
   const biderPriceList = generateBiderPriceList(props.initialPrice, props.currentPrice, props.maxPrice, 5);
 
   const bid = async (price: number) => {
-    const token = await user.getIdToken();
-    await bidAction(
-      {
-        id,
-        price,
-      },
-      token
-    )
+    await bidAction({
+      id,
+      price,
+    })
       .then((result) => {
         console.log(result);
       })

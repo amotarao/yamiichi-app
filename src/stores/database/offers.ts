@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { createContainer } from 'unstated-next';
 import { firestore } from '../../modules/firebase';
@@ -98,12 +97,17 @@ const useOffers = () => {
     return result;
   };
 
-  const bid = (data: OfferItemBiderInterface, token: string) => {
-    return axios.post(`https://api.yamiichi.app/bid/${data.id}`, data, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  const bid = async ({ id, price }: OfferItemBiderInterface) => {
+    const result = await offersCollection
+      .doc(id)
+      .collection('biders')
+      .add({
+        price,
+        tmp: {
+          uid,
+        },
+      });
+    return result;
   };
 
   return {

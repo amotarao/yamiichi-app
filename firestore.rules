@@ -9,6 +9,9 @@ service cloud.firestore {
     function getUserDoc(userID) {
       return get(/databases/$(database)/documents/users/$(userID));
     }
+    function getOfferDoc(offerID) {
+      return get(/databases/$(database)/documents/offers/$(offerID));
+    }
     function getTeamRefFromUser(userID) {
       return getUserDoc(userID).data.slackTeamRef;
     }
@@ -28,8 +31,15 @@ service cloud.firestore {
                     && request.resource.data.tmp.uid is string
                     && isMe(request.resource.data.tmp.uid);
 
-      match /bidars/{bidarID} {
-        allow create: if true;
+      match /biders/{bidarID} {
+        allow create: if isLoggedIn()
+                      && request.resource.data.price is int
+                      && getOfferDoc(offerID).data.active
+                      && getOfferDoc(offerID).data.currentPrice < request.resource.data.price
+                      && getOfferDoc(offerID).data.initialPrice <= request.resource.data.price
+                      && (getOfferDoc(offerID).data.maxPrice < 0 || getOfferDoc(offerID).data.maxPrice >= request.resource.data.price)
+                      && getOfferDoc(offerID).data.periodDate >= request.time
+                      && isMe(request.resource.data.tmp.uid);
       }
     }
 
