@@ -8,7 +8,7 @@ interface Props extends RouteComponentProps, Partial<CreateProps> {}
 
 const CreateInner: React.FC<Props> = ({ history }) => {
   const { isLoading: userIsLoading, signedIn, user } = UserContainer.useContainer();
-  const { isLoading: offersIsLoading, create } = OffersContainer.useContainer();
+  const { isLoading: offersIsLoading, setTeamId, setUid, create } = OffersContainer.useContainer();
 
   if (!userIsLoading && !signedIn) {
     history.replace('/');
@@ -20,11 +20,15 @@ const CreateInner: React.FC<Props> = ({ history }) => {
     history.replace('/dashboard');
   };
 
+  if (user) {
+    setTeamId(user.uid.replace(/-.+$/, ''));
+    setUid(user.uid);
+  }
+
   return (
     <Create
       {...{
         isLoading,
-        user: user!,
         create,
         success: toDashboard,
         cancel: toDashboard,

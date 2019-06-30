@@ -1,6 +1,5 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import { AxiosPromise } from 'axios';
 import React, { useState } from 'react';
 import { FormControl, TextField, Button, Paper, Typography, FormLabel, FormControlLabel, RadioGroup, Radio } from '@material-ui/core';
 import { InputWrapperStyle, InputStyle, PaperStyle, TypographyStyle, DurationLabelStyle, ActionButtonStyle } from './styled';
@@ -9,13 +8,12 @@ import { OfferItemRegistrationInterface } from '../../../stores/database/offers'
 export interface CreateProps {
   className?: string;
   isLoading: boolean;
-  user: firebase.User;
-  create: (data: OfferItemRegistrationInterface, token: string) => AxiosPromise<any>;
+  create: (data: OfferItemRegistrationInterface) => Promise<any>;
   success: () => void;
   cancel: () => void;
 }
 
-export const Create: React.FC<CreateProps> = ({ className, user, create, success, cancel }) => {
+export const Create: React.FC<CreateProps> = ({ className, create, success, cancel }) => {
   const durationOptions = [
     { name: '1時間', value: '1h' },
     { name: '3時間', value: '3h' },
@@ -55,18 +53,14 @@ export const Create: React.FC<CreateProps> = ({ className, user, create, success
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSubmitDisabled(true);
-    const token = await user.getIdToken();
     const periodDuration = getSecondsFromDuration(duration);
-    create(
-      {
-        title: title || '',
-        description: description || undefined,
-        initialPrice: initialPrice === null ? -1 : initialPrice,
-        maxPrice: maxPrice === null ? undefined : maxPrice,
-        periodDuration: periodDuration === null ? -1 : periodDuration,
-      },
-      token
-    )
+    create({
+      title: title || '',
+      description: description || undefined,
+      initialPrice: initialPrice === null ? -1 : initialPrice,
+      maxPrice: maxPrice === null ? undefined : maxPrice,
+      periodDuration: periodDuration === null ? -1 : periodDuration,
+    })
       .then(() => {
         success();
       })

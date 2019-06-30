@@ -8,7 +8,7 @@ interface Props extends RouteComponentProps, Partial<DashboardProps> {}
 
 const DashboardInner: React.FC<Props> = ({ history }) => {
   const { isLoading: userIsLoading, signedIn, user } = UserContainer.useContainer();
-  const { isLoading: offersIsLoading, setTeamId } = OffersContainer.useContainer();
+  const { isLoading: offersIsLoading, setTeamId, setUid } = OffersContainer.useContainer();
 
   useEffect(() => {
     if (!userIsLoading && !signedIn) {
@@ -20,6 +20,7 @@ const DashboardInner: React.FC<Props> = ({ history }) => {
 
   if (user) {
     setTeamId(user.uid.replace(/-.+$/, ''));
+    setUid(user.uid);
   }
 
   return (

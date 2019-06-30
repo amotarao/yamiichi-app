@@ -17,6 +17,16 @@ service cloud.firestore {
 
     match /offers/{offerID} {
       allow read: if resource.data.teamRef == getTeamRefFromUser(request.auth.uid);
+      allow create: if isLoggedIn()
+                    && request.resource.data.title is string
+                    && request.resource.data.description is string
+                    && request.resource.data.initialPrice is int
+                    && request.resource.data.maxPrice is int
+                    && (request.resource.data.maxPrice < 0 || request.resource.data.maxPrice >= request.resource.data.initialPrice)
+                    && request.resource.data.tmp is map
+                    && request.resource.data.tmp.periodDuration is int
+                    && request.resource.data.tmp.uid is string
+                    && isMe(request.resource.data.tmp.uid);
 
       match /bidars/{bidarID} {
         allow create: if true;

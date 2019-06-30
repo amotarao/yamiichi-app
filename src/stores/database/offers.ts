@@ -41,6 +41,7 @@ const useOffers = () => {
   const [isLoading, setLoading] = useState<boolean>(true);
   const [items, setItems] = useState<OfferItemInterface[]>([]);
   const [teamId, setTeamId] = useState<string>('');
+  const [uid, setUid] = useState<string | null>(null);
 
   useEffect(() => {
     const tmpItems: OfferItemInterface[] = [];
@@ -83,12 +84,18 @@ const useOffers = () => {
     });
   };
 
-  const create = (data: OfferItemRegistrationInterface, token: string) => {
-    return axios.post('https://api.yamiichi.app/offer', data, {
-      headers: {
-        Authorization: `Bearer ${token}`,
+  const create = async ({ title, description = '', initialPrice, maxPrice = -1, periodDuration }: OfferItemRegistrationInterface) => {
+    const result = await offersCollection.add({
+      title,
+      description,
+      initialPrice,
+      maxPrice,
+      tmp: {
+        uid,
+        periodDuration,
       },
     });
+    return result;
   };
 
   const bid = (data: OfferItemBiderInterface, token: string) => {
@@ -103,6 +110,7 @@ const useOffers = () => {
     isLoading,
     items,
     setTeamId,
+    setUid,
     getById,
     create,
     bid,

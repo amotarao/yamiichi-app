@@ -11,6 +11,17 @@ export interface OfferItemDataInterface {
   periodDate: FirebaseFirestore.Timestamp;
 }
 
+export interface OfferItemRegistrationInterface {
+  title: OfferItemDataInterface['title'];
+  description: OfferItemDataInterface['description'];
+  initialPrice: OfferItemDataInterface['initialPrice'];
+  maxPrice: OfferItemDataInterface['maxPrice'];
+  tmp: {
+    periodDuration: number;
+    uid: string;
+  };
+}
+
 export interface OfferItemBiderItemDataInterface {
   bidDate: FirebaseFirestore.Timestamp;
   bidderRef: FirebaseFirestore.DocumentReference;
