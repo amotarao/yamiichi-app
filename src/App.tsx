@@ -1,14 +1,14 @@
 import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { Provider } from 'unstated';
 import { TopContainer } from './components/pages/Top';
 import { CallbackContainer } from './components/pages/Callback';
 import { DashboardContainer } from './components/pages/Dashboard';
 import { CreateContainer } from './components/pages/Create';
 import { GlobalStyle } from './constants/GlobalStyle';
+import { UserContainer } from './stores/user';
 
 const App: React.FC = () => (
-  <Provider>
+  <UserContainer.Provider>
     <GlobalStyle />
     <Router>
       <Route path="/" exact component={TopContainer} />
@@ -16,7 +16,7 @@ const App: React.FC = () => (
       <Route path="/dashboard" component={DashboardContainer} />
       <Route path="/create" component={CreateContainer} />
     </Router>
-  </Provider>
+  </UserContainer.Provider>
 );
 
 export default App;
