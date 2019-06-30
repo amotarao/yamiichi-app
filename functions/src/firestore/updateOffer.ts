@@ -9,7 +9,7 @@ export default async (change: functions.Change<FirebaseFirestore.DocumentSnapsho
   const diff = _.omitBy(afterData, (value, key) => beforeData[key as keyof OfferItemDataInterface] === value);
 
   if ('currentPrice' in diff) {
-    if (afterData.maxPrice <= afterData.currentPrice) {
+    if (afterData.maxPrice >= 0 && afterData.maxPrice <= afterData.currentPrice) {
       return change.after.ref.set(
         {
           active: false,
