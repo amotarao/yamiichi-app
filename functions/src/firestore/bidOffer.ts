@@ -1,8 +1,10 @@
+import { OfferItemDataInterface, OfferItemBiderItemDataInterface } from '../utils/interfaces';
+
 export default async (snap: FirebaseFirestore.DocumentSnapshot) => {
-  const { price, bidderRef, bidDate } = snap.data() as { price: number; bidderRef: FirebaseFirestore.DocumentReference; bidDate: FirebaseFirestore.Timestamp };
+  const { price, bidderRef, bidDate } = snap.data() as OfferItemBiderItemDataInterface;
   const offerRef = snap.ref.parent.parent!;
   const offerSnapshot = await offerRef.get();
-  const { active, currentPrice, periodDate } = offerSnapshot.data() as { active: boolean; currentPrice: number; periodDate: FirebaseFirestore.Timestamp };
+  const { active, currentPrice, periodDate } = offerSnapshot.data() as OfferItemDataInterface;
 
   const reject = () => {
     return snap.ref.set(

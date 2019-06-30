@@ -7,8 +7,12 @@ import { auth, firestore } from '../../modules/firebase';
 const usersCollection = firestore.collection('users');
 const teamsCollection = firestore.collection('teams');
 
+export interface AuthRedirectQuery {
+  code?: string;
+}
+
 export default async (req: Request, res: Response) => {
-  const { code } = (req as { query?: { code?: string } }).query!;
+  const { code } = req.query as AuthRedirectQuery;
   if (!code) {
     res.status(400).end();
     return;

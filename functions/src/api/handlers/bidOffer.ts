@@ -1,9 +1,18 @@
 import * as moment from 'moment';
 import { Request, Response } from 'express';
 import { auth, firestore } from '../../modules/firebase';
+import { OfferItemDataInterface } from '../../utils/interfaces';
 
 const usersCollection = firestore.collection('users');
 const offersCollection = firestore.collection('offers');
+
+export interface BidOfferRequestParams {
+  offerId: string;
+}
+
+export interface BidOfferRequestBody {
+  price: number;
+}
 
 export default async (req: Request, res: Response) => {
   const authorization = req.headers.authorization;
@@ -20,8 +29,8 @@ export default async (req: Request, res: Response) => {
     return;
   }
 
-  const { offerId } = req.params as { offerId: string };
-  const { price = 0 } = req.body;
+  const { offerId } = req.params as BidOfferRequestParams;
+  const { price = 0 } = req.body as BidOfferRequestBody;
   console.log(req.body);
 
   if (isNaN(price)) {
@@ -34,13 +43,7 @@ export default async (req: Request, res: Response) => {
 
   const targetOfferRef = offersCollection.doc(offerId);
   const targetOfferSnapshot = await targetOfferRef.get();
-  const { active, initialPrice, hasMaxPrice, maxPrice, currentPrice } = targetOfferSnapshot.data() as {
-    active: boolean;
-    initialPrice: number;
-    hasMaxPrice: boolean;
-    maxPrice: number;
-    currentPrice: number;
-  };
+  const { active, initialPrice, hasMaxPrice, maxPrice, currentPrice } = targetOfferSnapshot.data() as OfferItemDataInterface;
 
   if (!active) {
     res.status(422).json({
