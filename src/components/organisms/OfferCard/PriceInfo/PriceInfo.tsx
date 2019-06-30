@@ -5,12 +5,12 @@ import { PriceInfoStyle, CurrentPriceStyle, MaxPriceStyle } from './styled';
 
 export interface PriceInfoProps {
   initialPrice: number;
-  hasMaxPrice: boolean;
   maxPrice: number;
   currentPrice: number;
 }
 
-export const PriceInfo: React.FC<PriceInfoProps> = ({ initialPrice, hasMaxPrice, maxPrice, currentPrice }) => {
+export const PriceInfo: React.FC<PriceInfoProps> = ({ initialPrice, maxPrice, currentPrice }) => {
+  const hasMaxPrice = maxPrice >= 0;
   return (
     <div css={PriceInfoStyle}>
       {hasMaxPrice && maxPrice !== initialPrice ? <p css={MaxPriceStyle}>即決 ¥{maxPrice.toLocaleString()}</p> : null}

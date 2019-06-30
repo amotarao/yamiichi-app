@@ -78,7 +78,6 @@ export default async (req: Request, res: Response) => {
     lastBidderRef: null,
     teamRef: null, // Memo: will be updated on Firestore Trigger
     initialPrice,
-    hasMaxPrice: maxPrice >= 0,
     maxPrice: maxPrice >= 0 ? maxPrice : -1,
     currentPrice: -1,
     registrationDate: now.toDate(),

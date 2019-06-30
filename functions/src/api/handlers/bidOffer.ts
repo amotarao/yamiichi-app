@@ -43,7 +43,7 @@ export default async (req: Request, res: Response) => {
 
   const targetOfferRef = offersCollection.doc(offerId);
   const targetOfferSnapshot = await targetOfferRef.get();
-  const { active, initialPrice, hasMaxPrice, maxPrice, currentPrice } = targetOfferSnapshot.data() as OfferItemDataInterface;
+  const { active, initialPrice, maxPrice, currentPrice } = targetOfferSnapshot.data() as OfferItemDataInterface;
 
   if (!active) {
     res.status(422).json({
@@ -61,7 +61,7 @@ export default async (req: Request, res: Response) => {
     return;
   }
 
-  if (hasMaxPrice && maxPrice < price) {
+  if (maxPrice >= 0 && maxPrice < price) {
     res.status(422).json({
       field: 'initialPrice',
       text: '入札価格が上限価格を上回っている',

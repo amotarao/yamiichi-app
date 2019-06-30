@@ -19,7 +19,6 @@ export interface OfferItemDataInterface {
   authorRef: firebase.firestore.DocumentReference;
   lastBidderRef: firebase.firestore.DocumentReference | null;
   initialPrice: number;
-  hasMaxPrice: boolean;
   maxPrice: number;
   currentPrice: number;
   registrationDate: firebase.firestore.Timestamp;

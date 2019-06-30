@@ -81,7 +81,7 @@ export const OfferCard: React.FC<OfferCardProps> = ({
   };
 
   const finished = props.periodDate.toDate().getTime() < new Date().getTime();
-  const bidDisabled = !props.active || (props.hasMaxPrice && props.maxPrice <= props.currentPrice) || finished;
+  const bidDisabled = !props.active || (props.maxPrice >= 0 && props.maxPrice <= props.currentPrice) || finished;
 
   return (
     <Paper css={WrapperStyle} className={`rowspan-3 rowspan-${[2, 3][Math.floor(Math.random() * 2)]}`} elevation={1}>
