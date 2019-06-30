@@ -3,6 +3,10 @@ import { jsx } from '@emotion/core';
 import { Button, Paper } from '@material-ui/core';
 import React from 'react';
 import { OfferItemInterface, OfferItemBiderInterface } from '../../../stores/database/offers';
+import { generateBiderPriceList } from '../../../utils/bider';
+import { useBool } from '../../../utils/hooks';
+import { BidAlert } from './BidAlert';
+import { BidSelector } from './BidSelector';
 import { PriceInfo } from './PriceInfo';
 import { RemainingTime } from './RemainingTime';
 import {
@@ -30,11 +34,15 @@ export const OfferCard: React.FC<OfferCardProps> = ({
     data: { ...props },
   },
   user,
-  bid,
+  bid: bidAction,
 }) => {
-  const handleBid = async (price: number) => {
+  const [isOpenedBidSelector, openBidSelector, closeBidSelector] = useBool(false);
+  const [isOpenedBidWithMaxPriceAlert, openBidWithMaxPriceAlert, closeBidWithMaxPriceAlert] = useBool(false);
+  const biderPriceList = generateBiderPriceList(props.initialPrice, props.currentPrice, props.maxPrice, 5);
+
+  const bid = async (price: number) => {
     const token = await user.getIdToken();
-    await bid(
+    await bidAction(
       {
         id,
         price,
@@ -47,6 +55,29 @@ export const OfferCard: React.FC<OfferCardProps> = ({
       .catch((error) => {
         console.error(error);
       });
+    closeBidSelector();
+    closeBidWithMaxPriceAlert();
+  };
+
+  const handleClickBid = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    if (event.shiftKey) {
+      if (props.currentPrice !== -1) {
+        bid(biderPriceList ? biderPriceList[0] : -1);
+        return;
+      } else {
+        bid(props.initialPrice);
+        return;
+      }
+    }
+    openBidSelector();
+  };
+
+  const handleClickBidWithMaxPrice = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    if (event.shiftKey) {
+      bid(props.maxPrice);
+      return;
+    }
+    openBidWithMaxPriceAlert();
   };
 
   const finished = props.periodDate.toDate().getTime() < new Date().getTime();
@@ -77,12 +108,29 @@ export const OfferCard: React.FC<OfferCardProps> = ({
         </div>
         <div css={ActionAreaStyle}>
           {!bidDisabled ? <RemainingTime date={props.periodDate.toDate()} /> : <p>終了</p>}
-          <Button css={ActionButtonStyle} variant="text" color="primary" disabled={bidDisabled}>
+          <Button css={ActionButtonStyle} variant="text" color="primary" disabled={bidDisabled} onClick={handleClickBid}>
             入札
           </Button>
-          <Button css={ActionButtonStyle} variant="contained" color="primary" disabled={bidDisabled} onClick={() => handleBid(props.maxPrice)}>
+          <BidSelector
+            title={props.title}
+            prices={biderPriceList || [props.maxPrice]}
+            maxPrice={props.maxPrice}
+            open={isOpenedBidSelector}
+            bid={bid}
+            onClose={closeBidSelector}
+          />
+          <Button css={ActionButtonStyle} variant="contained" color="primary" disabled={bidDisabled} onClick={handleClickBidWithMaxPrice}>
             即決
           </Button>
+          <BidAlert
+            title={props.title}
+            price={props.maxPrice}
+            isMaxPrice
+            open={isOpenedBidWithMaxPriceAlert}
+            onApprove={() => bid(props.maxPrice)}
+            onCancel={closeBidWithMaxPriceAlert}
+            onClose={closeBidWithMaxPriceAlert}
+          />
         </div>
       </div>
     </Paper>
