@@ -16,8 +16,9 @@ export interface BidSelectorProps {
 }
 
 export const BidSelector: React.FC<BidSelectorProps> = ({ title, prices, maxPrice, open = true, bid, onClose }) => {
+  const hasMaxPrice = maxPrice >= 0;
   const [isOpenedAlert, openAlert, closeAlert] = useBool(false);
-  const [selectedPrice, setPrice] = useState<number>(prices[0]);
+  const [selectedPrice, setPrice] = useState<number>(prices.length ? prices[0] : maxPrice);
 
   const handleChange = (event: React.ChangeEvent<unknown>) => {
     setPrice(Number((event.target as HTMLInputElement).value));
@@ -43,11 +44,12 @@ export const BidSelector: React.FC<BidSelectorProps> = ({ title, prices, maxPric
       <DialogContent>
         <FormControl component={'fieldset' as 'div'}>
           <RadioGroup aria-label="入札価格" name="price" value={selectedPrice.toString()} onChange={handleChange}>
-            {prices.map((price, i) => (
-              <FormControlLabel key={i} value={price.toString()} control={<Radio />} label={`¥${price.toLocaleString()}`} />
-            ))}
-            {prices[prices.length - 1] < maxPrice && (
-              <FormControlLabel value={maxPrice.toString()} control={<Radio />} label={`¥${maxPrice.toLocaleString()}`} />
+            {prices.map((price, i) => {
+              const labelSuffix = hasMaxPrice && maxPrice <= price ? ' (即決)' : '';
+              return <FormControlLabel key={i} value={price.toString()} control={<Radio />} label={`¥${price.toLocaleString()}${labelSuffix}`} />;
+            })}
+            {hasMaxPrice && (!prices.length || prices[prices.length - 1] < maxPrice) && (
+              <FormControlLabel value={maxPrice.toString()} control={<Radio />} label={`¥${maxPrice.toLocaleString()} (即決)`} />
             )}
           </RadioGroup>
         </FormControl>
