@@ -49,6 +49,9 @@ export const OfferCard: React.FC<OfferCardProps> = ({
       });
   };
 
+  const finished = props.periodDate.toDate().getTime() < new Date().getTime();
+  const bidDisabled = !props.active || (props.hasMaxPrice && props.maxPrice <= props.currentPrice) || finished;
+
   return (
     <Paper css={WrapperStyle} className={`rowspan-3 rowspan-${[2, 3][Math.floor(Math.random() * 2)]}`} elevation={1}>
       <div css={MainAreaStyle}>
@@ -73,11 +76,11 @@ export const OfferCard: React.FC<OfferCardProps> = ({
           )}
         </div>
         <div css={ActionAreaStyle}>
-          <RemainingTime date={props.periodDate.toDate()} />
-          <Button css={ActionButtonStyle} variant="text" color="primary">
+          {!bidDisabled ? <RemainingTime date={props.periodDate.toDate()} /> : <p>終了</p>}
+          <Button css={ActionButtonStyle} variant="text" color="primary" disabled={bidDisabled}>
             入札
           </Button>
-          <Button css={ActionButtonStyle} variant="contained" color="primary" onClick={() => handleBid(props.maxPrice)}>
+          <Button css={ActionButtonStyle} variant="contained" color="primary" disabled={bidDisabled} onClick={() => handleBid(props.maxPrice)}>
             即決
           </Button>
         </div>
