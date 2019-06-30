@@ -1,10 +1,8 @@
 import css from '@emotion/css';
 
-export const HeaderStyle = css`
+export const ContainerStyle = css`
   && {
-    background: none;
-    box-shadow: none;
-    margin-bottom: 24px;
+    padding-top: 72px;
   }
 `;
 
