@@ -15,7 +15,7 @@ export const PriceInfo: React.FC<PriceInfoProps> = ({ initialPrice, hasMaxPrice,
     <div css={PriceInfoStyle}>
       {hasMaxPrice && maxPrice !== initialPrice ? <p css={MaxPriceStyle}>即決 ¥{maxPrice.toLocaleString()}</p> : null}
       <p css={CurrentPriceStyle}>
-        <span>{maxPrice !== initialPrice ? '現在 ' : '即決 '}</span>¥{currentPrice ? currentPrice.toLocaleString() : initialPrice.toLocaleString()}
+        <span>{maxPrice !== initialPrice ? '現在 ' : '即決 '}</span>¥{currentPrice !== -1 ? currentPrice.toLocaleString() : initialPrice.toLocaleString()}
       </p>
     </div>
   );
