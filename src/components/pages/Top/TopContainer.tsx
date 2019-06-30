@@ -10,7 +10,6 @@ const TopContainer: React.FC<Props> = ({ history }) => {
 
   useEffect(() => {
     if (!isLoading && signedIn) {
-      console.log('/dashboard');
       history.replace('/dashboard');
     }
   }, [history, signedIn, isLoading]);

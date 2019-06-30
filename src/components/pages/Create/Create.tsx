@@ -149,9 +149,7 @@ export const Create: React.FC<CreateProps> = ({ className, user, create, success
               }}
               onChange={(event) => {
                 const value = event.target.value.replace(/[\D]/g, '');
-                console.log(value);
                 if (isNaN(Number(value))) {
-                  console.log('isNaN');
                   setMaxPrice(null);
                 }
                 setMaxPrice(Number(value));
