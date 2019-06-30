@@ -37,6 +37,7 @@ export const OfferCard: React.FC<OfferCardProps> = ({
   const [isOpenedBidSelector, openBidSelector, closeBidSelector] = useBool(false);
   const [isOpenedBidWithMaxPriceAlert, openBidWithMaxPriceAlert, closeBidWithMaxPriceAlert] = useBool(false);
   const biderPriceList = generateBiderPriceList(props.initialPrice, props.currentPrice, props.maxPrice, 5);
+  const hasMaxPrice = props.maxPrice >= 0;
 
   const bid = async (price: number) => {
     await bidAction({
@@ -75,7 +76,7 @@ export const OfferCard: React.FC<OfferCardProps> = ({
   };
 
   const finished = props.periodDate.toDate().getTime() < new Date().getTime();
-  const bidDisabled = !props.active || (props.maxPrice >= 0 && props.maxPrice <= props.currentPrice) || finished;
+  const bidDisabled = !props.active || (hasMaxPrice && props.maxPrice <= props.currentPrice) || finished;
 
   return (
     <Paper css={WrapperStyle} className={`rowspan-3 rowspan-${[2, 3][Math.floor(Math.random() * 2)]}`} elevation={1}>
@@ -102,7 +103,7 @@ export const OfferCard: React.FC<OfferCardProps> = ({
         </div>
         <div css={ActionAreaStyle}>
           {!bidDisabled ? <RemainingTime date={props.periodDate.toDate()} /> : <p>終了</p>}
-          <Button css={ActionButtonStyle} variant="text" color="primary" disabled={bidDisabled} onClick={handleClickBid}>
+          <Button css={ActionButtonStyle} variant={hasMaxPrice ? 'text' : 'contained'} color="primary" disabled={bidDisabled} onClick={handleClickBid}>
             入札
           </Button>
           <BidSelector
@@ -113,18 +114,22 @@ export const OfferCard: React.FC<OfferCardProps> = ({
             bid={bid}
             onClose={closeBidSelector}
           />
-          <Button css={ActionButtonStyle} variant="contained" color="primary" disabled={bidDisabled} onClick={handleClickBidWithMaxPrice}>
-            即決
-          </Button>
-          <BidAlert
-            title={props.title}
-            price={props.maxPrice}
-            isMaxPrice
-            open={isOpenedBidWithMaxPriceAlert}
-            onApprove={() => bid(props.maxPrice)}
-            onCancel={closeBidWithMaxPriceAlert}
-            onClose={closeBidWithMaxPriceAlert}
-          />
+          {hasMaxPrice && (
+            <React.Fragment>
+              <Button css={ActionButtonStyle} variant="contained" color="primary" disabled={bidDisabled} onClick={handleClickBidWithMaxPrice}>
+                即決
+              </Button>
+              <BidAlert
+                title={props.title}
+                price={props.maxPrice}
+                isMaxPrice
+                open={isOpenedBidWithMaxPriceAlert}
+                onApprove={() => bid(props.maxPrice)}
+                onCancel={closeBidWithMaxPriceAlert}
+                onClose={closeBidWithMaxPriceAlert}
+              />
+            </React.Fragment>
+          )}
         </div>
       </div>
     </Paper>
