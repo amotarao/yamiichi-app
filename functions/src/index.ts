@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions';
 import apiApp from './api';
 import createOffer from './firestore/createOffer';
+import bidOffer from './firestore/bidOffer';
 
 export const api = functions
   .runWith({
@@ -10,3 +11,4 @@ export const api = functions
   .https.onRequest(apiApp);
 
 export const firestoreCreateOffer = functions.firestore.document('offers/{offerId}').onCreate(createOffer);
+export const firestoreBidOffer = functions.firestore.document('offers/{offerId}/biders/{biderId}').onCreate(bidOffer);
