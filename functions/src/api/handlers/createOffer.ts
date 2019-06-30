@@ -72,7 +72,6 @@ export default async (req: Request, res: Response) => {
   await offersCollection.add({
     title,
     description: description || '',
-    itemImageUrl: '',
     active: true,
     authorRef: usersCollection.doc(uid),
     lastBidderRef: null,

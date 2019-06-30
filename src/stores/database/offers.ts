@@ -14,7 +14,6 @@ export interface OfferItemInterface {
 export interface OfferItemDataInterface {
   title: string;
   description?: string;
-  itemImageUrl?: string;
   active: boolean;
   authorRef: firebase.firestore.DocumentReference;
   lastBidderRef: firebase.firestore.DocumentReference | null;
