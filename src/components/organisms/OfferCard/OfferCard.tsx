@@ -2,7 +2,7 @@
 import { jsx } from '@emotion/core';
 import { Button, Paper } from '@material-ui/core';
 import React from 'react';
-import { OfferItemInterface } from '../../../stores/database/offers';
+import { OfferItemInterface, OfferItemBiderInterface } from '../../../stores/database/offers';
 import { PriceInfo } from './PriceInfo';
 import { RemainingTime } from './RemainingTime';
 import {
@@ -18,7 +18,37 @@ import {
   ActionButtonStyle,
 } from './styled';
 
-export const OfferCard: React.FC<OfferItemInterface> = ({ data: { ...props } }) => {
+export interface OfferCardProps {
+  item: OfferItemInterface;
+  user: firebase.User;
+  bid: (data: OfferItemBiderInterface, token: string) => Promise<any>;
+}
+
+export const OfferCard: React.FC<OfferCardProps> = ({
+  item: {
+    id,
+    data: { ...props },
+  },
+  user,
+  bid,
+}) => {
+  const handleBid = async (price: number) => {
+    const token = await user.getIdToken();
+    await bid(
+      {
+        id,
+        price,
+      },
+      token
+    )
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
   return (
     <Paper css={WrapperStyle} className={`rowspan-3 rowspan-${[2, 3][Math.floor(Math.random() * 2)]}`} elevation={1}>
       <div css={MainAreaStyle}>
@@ -47,7 +77,7 @@ export const OfferCard: React.FC<OfferItemInterface> = ({ data: { ...props } }) 
           <Button css={ActionButtonStyle} variant="text" color="primary">
             入札
           </Button>
-          <Button css={ActionButtonStyle} variant="contained" color="primary">
+          <Button css={ActionButtonStyle} variant="contained" color="primary" onClick={() => handleBid(props.maxPrice)}>
             即決
           </Button>
         </div>

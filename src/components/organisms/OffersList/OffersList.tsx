@@ -2,7 +2,7 @@
 import { jsx } from '@emotion/core';
 import React from 'react';
 import { OfferItemInterface } from '../../../stores/database/offers';
-import { OfferCard } from '../OfferCard';
+import { OfferCardContainer } from '../OfferCard';
 import { WrapperStyle } from './styled';
 
 export interface OffersListProps {
@@ -14,7 +14,7 @@ export const OffersList: React.FC<OffersListProps> = ({ className, items = [] })
   return (
     <div className={className} css={WrapperStyle}>
       {items.map((item) => (
-        <OfferCard key={item.id} {...item} />
+        <OfferCardContainer key={item.id} item={item} />
       ))}
     </div>
   );
