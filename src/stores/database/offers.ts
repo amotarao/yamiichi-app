@@ -34,6 +34,11 @@ export interface OfferItemRegistrationInterface {
   periodDuration: number;
 }
 
+export interface OfferItemBiderInterface {
+  id: OfferItemInterface['id'];
+  price: number;
+}
+
 const useOffers = () => {
   const [isLoading, setLoading] = useState<boolean>(true);
   const [items, setItems] = useState<OfferItemInterface[]>([]);
@@ -88,12 +93,21 @@ const useOffers = () => {
     });
   };
 
+  const bid = (data: OfferItemBiderInterface, token: string) => {
+    return axios.post(`https://api.yamiichi.app/bid/${data.id}`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  };
+
   return {
     isLoading,
     items,
     setTeamId,
     getById,
     create,
+    bid,
   };
 };
 
