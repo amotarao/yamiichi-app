@@ -17,7 +17,7 @@ export interface OfferItemDataInterface {
   itemImageUrl?: string;
   active: boolean;
   authorRef: firebase.firestore.DocumentReference;
-  lastBidderRef: firebase.firestore.DocumentReference;
+  lastBidderRef: firebase.firestore.DocumentReference | null;
   initialPrice: number;
   hasMaxPrice: boolean;
   maxPrice: number;
