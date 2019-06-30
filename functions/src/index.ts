@@ -1,5 +1,5 @@
 import * as functions from 'firebase-functions';
-import apiApp from './api';
+import httpsApi from './https';
 import createOffer from './firestore/createOffer';
 import updateOffer from './firestore/updateOffer';
 import createOfferBider from './firestore/createOfferBider';
@@ -9,7 +9,7 @@ export const api = functions
     timeoutSeconds: 30,
     memory: '1GB',
   })
-  .https.onRequest(apiApp);
+  .https.onRequest(httpsApi);
 
 export const firestoreCreateOffer = functions
   .region('asia-northeast1')
