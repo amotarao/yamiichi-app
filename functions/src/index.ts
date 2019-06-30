@@ -11,6 +11,15 @@ export const api = functions
   })
   .https.onRequest(apiApp);
 
-export const firestoreCreateOffer = functions.firestore.document('offers/{offerId}').onCreate(createOffer);
-export const firestoreUpdateOffer = functions.firestore.document('offers/{offerId}').onUpdate(updateOffer);
-export const firestoreBidOffer = functions.firestore.document('offers/{offerId}/biders/{biderId}').onCreate(bidOffer);
+export const firestoreCreateOffer = functions
+  .region('asia-northeast1')
+  .firestore.document('offers/{offerId}')
+  .onCreate(createOffer);
+export const firestoreUpdateOffer = functions
+  .region('asia-northeast1')
+  .firestore.document('offers/{offerId}')
+  .onUpdate(updateOffer);
+export const firestoreBidOffer = functions
+  .region('asia-northeast1')
+  .firestore.document('offers/{offerId}/biders/{biderId}')
+  .onCreate(bidOffer);
