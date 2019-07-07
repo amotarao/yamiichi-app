@@ -5,6 +5,7 @@ import { env } from '../../modules/env';
 import { auth, firestore } from '../../modules/firebase';
 
 const usersCollection = firestore.collection('users');
+const publicUsersCollection = firestore.collection('publicUsers');
 const teamsCollection = firestore.collection('teams');
 
 export interface AuthRedirectQuery {
@@ -43,6 +44,10 @@ export default async (req: Request, res: Response) => {
     return;
   }
 
+  const uid = `slack:${team_id}-${user_id}`;
+
+  const setDocs = [];
+
   const teamDoc = teamsCollection.doc(`slack:${team_id}`);
   const teamData = {
     slackBotAccessToken: bot.bot_access_token,
@@ -50,9 +55,9 @@ export default async (req: Request, res: Response) => {
     slackTeamId: team_id,
     slackTeamName: team_name,
   };
-  teamDoc.set(teamData, { merge: true });
+  const setTeamDoc = teamDoc.set(teamData, { merge: true });
+  setDocs.push(setTeamDoc);
 
-  const uid = `slack:${team_id}-${user_id}`;
   const userDoc = usersCollection.doc(uid);
   const userData = {
     slackAccessToken: access_token,
@@ -60,15 +65,27 @@ export default async (req: Request, res: Response) => {
     slackUserId: user_id,
     slackTeamRef: teamDoc,
   };
-  userDoc.set(userData, { merge: true });
+  const setUserDoc = userDoc.set(userData, { merge: true });
+  setDocs.push(setUserDoc);
 
-  const Client = new WebClient(access_token as string);
+  const Client = new WebClient(access_token);
   const { display_name, image_192 } = ((await Client.users.profile.get()) as {
     profile?: {
       display_name: string;
       image_192: string;
     };
   }).profile!;
+
+  const publicUserDoc = publicUsersCollection.doc(uid);
+  const publicUserData = {
+    displayName: display_name,
+    photoURL: image_192,
+    slackTeamRef: teamDoc,
+  };
+  const setPublicUserDoc = publicUserDoc.set(publicUserData, { merge: true });
+  setDocs.push(setPublicUserDoc);
+
+  await Promise.all(setDocs);
 
   await auth
     .updateUser(uid, {

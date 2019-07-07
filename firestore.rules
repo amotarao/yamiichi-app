@@ -6,6 +6,9 @@ service cloud.firestore {
     function isMe(userID) {
       return isLoggedIn() && request.auth.uid == userID;
     }
+    function isMyTeam(teamRef, UserID) {
+      return isLoggedIn() && teamRef == getTeamRefFromUser(UserID);
+    }
     function getUserDoc(userID) {
       return get(/databases/$(database)/documents/users/$(userID));
     }
@@ -19,7 +22,7 @@ service cloud.firestore {
     allow read: if isLoggedIn();
 
     match /offers/{offerID} {
-      allow read: if resource.data.teamRef == getTeamRefFromUser(request.auth.uid);
+      allow read: if isMyTeam(resource.data.teamRef, request.auth.uid);
       allow create: if isLoggedIn()
                     && request.resource.data.title is string
                     && request.resource.data.description is string
@@ -41,6 +44,10 @@ service cloud.firestore {
                       && getOfferDoc(offerID).data.periodDate >= request.time
                       && isMe(request.resource.data.tmp.uid);
       }
+    }
+
+    match /publicUsers/{userID} {
+      allow read: if isMyTeam(resource.data.teamRef, request.auth.uid);
     }
 
     match /users/{userID} {
