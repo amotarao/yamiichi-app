@@ -22,11 +22,13 @@ export default async (snap: FirebaseFirestore.DocumentSnapshot, context: functio
     { merge: true }
   );
 
-  return snap.ref.set(
+  await snap.ref.set(
     {
       bidDate: now.toDate(),
       bidderRef: userRef,
     },
     { merge: true }
   );
+
+  return;
 };

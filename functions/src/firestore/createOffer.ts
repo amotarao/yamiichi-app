@@ -10,22 +10,27 @@ export default async (snap: FirebaseFirestore.DocumentSnapshot, context: functio
   const {
     tmp: { periodDuration, uid },
   } = snap.data() as OfferItemRegistrationInterface;
-  const now = moment(context.timestamp);
 
   const author = await usersCollection.doc(uid).get();
   const { teamRef } = author.data() as UserItemDataInterface;
 
-  return snap.ref.set(
+  const now = moment(context.timestamp);
+  const registrationDate = now.toDate();
+  const periodDate = now.add(periodDuration, 's').toDate();
+
+  await snap.ref.set(
     {
       active: true,
       authorRef: usersCollection.doc(uid),
       lastBidderRef: null,
       teamRef,
       currentPrice: -1,
-      registrationDate: now.toDate(),
-      periodDate: now.add(periodDuration, 's').toDate(),
+      registrationDate,
+      periodDate,
       tmp: {},
     },
     { merge: true }
   );
+
+  return;
 };
