@@ -10,12 +10,13 @@ export interface BidSelectorProps {
   title: string;
   prices: number[];
   maxPrice: number;
+  disabled: boolean;
   open: boolean;
   bid: (price: number) => Promise<any>;
   onClose: () => void;
 }
 
-export const BidSelector: React.FC<BidSelectorProps> = ({ title, prices, maxPrice, open = true, bid, onClose }) => {
+export const BidSelector: React.FC<BidSelectorProps> = ({ title, prices, maxPrice, disabled, open = true, bid, onClose }) => {
   const hasMaxPrice = maxPrice >= 0;
   const [isOpenedAlert, openAlert, closeAlert] = useBool(false);
   const [selectedPrice, setPrice] = useState<number>(prices.length ? prices[0] : maxPrice);
@@ -55,16 +56,17 @@ export const BidSelector: React.FC<BidSelectorProps> = ({ title, prices, maxPric
         </FormControl>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="primary">
+        <Button onClick={onClose} color="primary" disabled={disabled}>
           キャンセル
         </Button>
-        <Button onClick={handleClickBid} variant="contained" color="primary" autoFocus>
+        <Button onClick={handleClickBid} variant="contained" color="primary" disabled={disabled} autoFocus>
           入札
         </Button>
         <BidAlert
           title={title}
           price={selectedPrice}
           isMaxPrice={selectedPrice === maxPrice}
+          disabled={disabled}
           open={isOpenedAlert}
           onApprove={() => bid(selectedPrice)}
           onCancel={closeAlert}
