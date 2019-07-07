@@ -27,20 +27,24 @@ export default async (req: Request, res: Response) => {
   });
   console.log(result);
 
-  const { ok, access_token, scope, user_id, team_name, team_id, bot } = result as {
+  const { ok, access_token, scope, user_id, team_name, team_id, bot = null } = result as {
     ok: boolean;
     access_token: string;
     scope: string;
     user_id: string;
     team_name: string;
     team_id: string;
-    bot: {
+    bot?: {
       bot_access_token: string;
       bot_user_id: string;
     };
   };
   if (!ok) {
     res.status(403).end();
+    return;
+  }
+  if (!bot) {
+    res.status(412).end();
     return;
   }
 
