@@ -1,7 +1,7 @@
 import { WebClient } from '@slack/web-api';
 import { Request, Response } from 'express';
 import { FirebaseError } from 'firebase-admin';
-import { env } from '../../modules/env';
+import { env } from '../../utils/env';
 import { auth, firestore } from '../../modules/firebase';
 
 const usersCollection = firestore.collection('users');
