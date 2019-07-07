@@ -55,7 +55,7 @@ const usePublicUsers = () => {
     });
   }, [teamId]);
 
-  const getById = (id: string) => {
+  const getPublicUserById = (id: string) => {
     return items.find((item) => {
       return item.id === id;
     });
@@ -65,7 +65,7 @@ const usePublicUsers = () => {
     isLoading,
     items,
     setTeamId,
-    getById,
+    getPublicUserById,
   };
 };
 

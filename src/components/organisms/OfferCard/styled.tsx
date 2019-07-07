@@ -116,8 +116,15 @@ export const UserStyle = css`
 export const UserImageStyle = css`
   && {
     border-radius: 50%;
+    height: 24px;
     margin-right: 6px;
     overflow: hidden;
+    width: 24px;
+
+    img {
+      max-height: 100%;
+      max-width: 100%;
+    }
   }
 `;
 

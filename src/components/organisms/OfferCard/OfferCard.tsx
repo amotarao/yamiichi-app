@@ -1,8 +1,9 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import { Button, Paper } from '@material-ui/core';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { OfferItemInterface, OfferItemBiderInterface } from '../../../stores/database/offers';
+import { PublicUserItemInterface } from '../../../stores/database/publicUsers';
 import { generateBiderPriceList } from '../../../utils/bider';
 import { useBool } from '../../../utils/hooks';
 import { BidAlert } from './BidAlert';
@@ -20,11 +21,14 @@ import {
   MainAreaStyle,
   OfferInfoStyle,
   ActionButtonStyle,
+  UserImageStyle,
+  UserNameStyle,
 } from './styled';
 
 export interface OfferCardProps {
   item: OfferItemInterface;
   bid: (data: OfferItemBiderInterface) => Promise<any>;
+  getUserById: (id: string) => PublicUserItemInterface | undefined;
 }
 
 export const OfferCard: React.FC<OfferCardProps> = ({
@@ -33,9 +37,12 @@ export const OfferCard: React.FC<OfferCardProps> = ({
     data: { ...props },
   },
   bid: bidAction,
+  getUserById,
 }) => {
   const [isOpenedBidSelector, openBidSelector, closeBidSelector] = useBool(false);
   const [isOpenedBidWithMaxPriceAlert, openBidWithMaxPriceAlert, closeBidWithMaxPriceAlert] = useBool(false);
+  const [author, setAuthor] = useState<PublicUserItemInterface | undefined>(undefined);
+  const [lastBidder, setLastBidder] = useState<PublicUserItemInterface | undefined>(undefined);
   const biderPriceList = generateBiderPriceList(props.initialPrice, props.currentPrice, props.maxPrice, 5);
   const hasMaxPrice = props.maxPrice >= 0;
 
@@ -75,6 +82,31 @@ export const OfferCard: React.FC<OfferCardProps> = ({
     openBidWithMaxPriceAlert();
   };
 
+  useEffect(() => {
+    (async () => {
+      if (props.authorRef) {
+        const author = await getUserById(props.authorRef.id);
+        if (author) {
+          setAuthor(author);
+          return;
+        }
+      }
+      setAuthor(undefined);
+    })();
+  }, [props.authorRef, getUserById]);
+
+  useEffect(() => {
+    (async () => {
+      if (props.lastBidderRef) {
+        const lastBidder = await getUserById(props.lastBidderRef.id);
+        if (lastBidder) {
+          setLastBidder(lastBidder);
+        }
+      }
+      setLastBidder(undefined);
+    })();
+  }, [props.lastBidderRef, getUserById]);
+
   const finished = props.periodDate.toDate().getTime() < new Date().getTime();
   const bidDisabled = !props.active || (hasMaxPrice && props.maxPrice <= props.currentPrice) || finished;
 
@@ -92,12 +124,20 @@ export const OfferCard: React.FC<OfferCardProps> = ({
       </div>
       <div css={MetaAreaStyle}>
         <div css={UserAreaStyle}>
-          {props.authorRef && (
+          {author && (
             <div css={UserStyle}>
-              {/* <div css={UserImageStyle}>
-                <img src={props.authorRef.iconUrl || 'https://placehold.jp/24x24.png'} />
+              <div css={UserImageStyle}>
+                <img src={author.data.photoURL || 'https://placehold.jp/24x24.png'} alt={`${author.data.displayName} の画像`} />
               </div>
-              <p css={UserNameStyle}>{props.authorRef.name}</p> */}
+              <p css={UserNameStyle}>{author.data.displayName}</p>
+            </div>
+          )}
+          {lastBidder && (
+            <div css={UserStyle}>
+              <div css={UserImageStyle}>
+                <img src={lastBidder.data.photoURL || 'https://placehold.jp/24x24.png'} alt={`${lastBidder.data.photoURL} の画像`} />
+              </div>
+              <p css={UserNameStyle}>{lastBidder.data.displayName}</p>
             </div>
           )}
         </div>
