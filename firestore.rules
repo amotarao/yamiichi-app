@@ -16,7 +16,7 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/offers/$(offerID));
     }
     function getTeamRefFromUser(userID) {
-      return getUserDoc(userID).data.slackTeamRef;
+      return getUserDoc(userID).data.teamRef;
     }
 
     allow read: if isLoggedIn();

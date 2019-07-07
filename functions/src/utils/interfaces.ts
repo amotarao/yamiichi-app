@@ -36,7 +36,7 @@ export interface OfferItemBiderRegistrationInterface {
 }
 
 export interface UserItemDataInterface {
-  slackTeamRef: FirebaseFirestore.DocumentReference;
+  teamRef: FirebaseFirestore.DocumentReference;
   slackUserId: string;
   slackAccessToken: string;
   slackScopes: string[];

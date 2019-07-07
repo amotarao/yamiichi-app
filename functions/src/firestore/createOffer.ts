@@ -13,14 +13,14 @@ export default async (snap: FirebaseFirestore.DocumentSnapshot, context: functio
   const now = moment(context.timestamp);
 
   const author = await usersCollection.doc(uid).get();
-  const { slackTeamRef } = author.data() as UserItemDataInterface;
+  const { teamRef } = author.data() as UserItemDataInterface;
 
   return snap.ref.set(
     {
       active: true,
       authorRef: usersCollection.doc(uid),
       lastBidderRef: null,
-      teamRef: slackTeamRef,
+      teamRef,
       currentPrice: -1,
       registrationDate: now.toDate(),
       periodDate: now.add(periodDuration, 's').toDate(),

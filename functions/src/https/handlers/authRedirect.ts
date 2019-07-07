@@ -52,24 +52,24 @@ export default async (req: Request, res: Response) => {
 
   const setDocs = [];
 
-  const teamDoc = teamsCollection.doc(`slack:${team_id}`);
+  const teamRef = teamsCollection.doc(`slack:${team_id}`);
   const teamData = {
     slackBotAccessToken: bot.bot_access_token,
     slackBotUserId: bot.bot_user_id,
     slackTeamId: team_id,
     slackTeamName: team_name,
   };
-  const setTeamDoc = teamDoc.set(teamData, { merge: true });
+  const setTeamDoc = teamRef.set(teamData, { merge: true });
   setDocs.push(setTeamDoc);
 
-  const userDoc = usersCollection.doc(uid);
+  const userRef = usersCollection.doc(uid);
   const userData = {
     slackAccessToken: access_token,
     slackScopes: scope.split(','),
     slackUserId: user_id,
-    slackTeamRef: teamDoc,
+    teamRef,
   };
-  const setUserDoc = userDoc.set(userData, { merge: true });
+  const setUserDoc = userRef.set(userData, { merge: true });
   setDocs.push(setUserDoc);
 
   const Client = new WebClient(access_token);
@@ -80,13 +80,13 @@ export default async (req: Request, res: Response) => {
     };
   }).profile!;
 
-  const publicUserDoc = publicUsersCollection.doc(uid);
+  const publicUserRef = publicUsersCollection.doc(uid);
   const publicUserData = {
     displayName: display_name,
     photoURL: image_192,
-    slackTeamRef: teamDoc,
+    teamRef,
   };
-  const setPublicUserDoc = publicUserDoc.set(publicUserData, { merge: true });
+  const setPublicUserDoc = publicUserRef.set(publicUserData, { merge: true });
   setDocs.push(setPublicUserDoc);
 
   await Promise.all(setDocs);
