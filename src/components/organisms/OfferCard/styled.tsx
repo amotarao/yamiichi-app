@@ -102,7 +102,7 @@ export const MetaAreaStyle = css`
 export const UserAreaStyle = css`
   && {
     display: flex;
-    padding: 16px 16px 8px;
+    padding: 16px;
   }
 `;
 
@@ -110,6 +110,10 @@ export const UserStyle = css`
   && {
     align-items: center;
     display: flex;
+
+    &:first-of-type {
+      margin-right: 16px;
+    }
   }
 `;
 

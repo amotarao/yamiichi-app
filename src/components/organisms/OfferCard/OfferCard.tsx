@@ -97,6 +97,7 @@ export const OfferCard: React.FC<OfferCardProps> = ({
         const lastBidder = await getUserById(props.lastBidderRef.id);
         if (lastBidder) {
           setLastBidder(lastBidder);
+          return;
         }
       }
       setLastBidder(undefined);
@@ -121,20 +122,22 @@ export const OfferCard: React.FC<OfferCardProps> = ({
       <div css={MetaAreaStyle}>
         <div css={UserAreaStyle}>
           {author && (
-            <div css={UserStyle}>
+            <div css={UserStyle} style={{ flex: '1 0 auto' }}>
               <div css={UserImageStyle}>
                 <img src={author.data.photoURL || 'https://placehold.jp/24x24.png'} alt={`${author.data.displayName} の画像`} />
               </div>
               <p css={UserNameStyle}>{author.data.displayName}</p>
             </div>
           )}
-          {lastBidder && (
-            <div css={UserStyle}>
+          {lastBidder ? (
+            <div css={UserStyle} style={{ flex: '0 0 auto' }}>
               <div css={UserImageStyle}>
                 <img src={lastBidder.data.photoURL || 'https://placehold.jp/24x24.png'} alt={`${lastBidder.data.photoURL} の画像`} />
               </div>
               <p css={UserNameStyle}>{lastBidder.data.displayName}</p>
             </div>
+          ) : (
+            <p style={{ flex: '0 0 auto' }}>入札なし</p>
           )}
         </div>
         <div css={ActionAreaStyle}>
