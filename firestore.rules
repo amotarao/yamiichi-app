@@ -27,7 +27,9 @@ service cloud.firestore {
                     && request.resource.data.title is string
                     && request.resource.data.description is string
                     && request.resource.data.initialPrice is int
+                    && -1 <= request.resource.data.initialPrice && request.resource.data.initialPrice <= 1000000
                     && request.resource.data.maxPrice is int
+                    && -1 <= request.resource.data.maxPrice && request.resource.data.maxPrice <= 1000000
                     && (request.resource.data.maxPrice < 0 || request.resource.data.maxPrice >= request.resource.data.initialPrice)
                     && request.resource.data.tmp is map
                     && request.resource.data.tmp.periodDuration is int
