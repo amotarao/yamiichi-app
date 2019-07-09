@@ -38,6 +38,22 @@
           "function": "api"
         }
       ]
+    },
+    {
+      "target": "slack-api",
+      "public": "functions/public",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**",
+        ".gitkeep"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "function": "slackApi"
+        }
+      ]
     }
   ]
 }

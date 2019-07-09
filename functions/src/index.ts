@@ -1,5 +1,6 @@
 import * as functions from 'firebase-functions';
 import apiApp from './api';
+import slackApiApp from './slack-api';
 import createOffer from './firestore/createOffer';
 import updateOffer from './firestore/updateOffer';
 import createOfferBider from './firestore/createOfferBider';
@@ -10,6 +11,13 @@ export const api = functions
     memory: '256MB',
   })
   .https.onRequest(apiApp);
+
+export const slackApi = functions
+  .runWith({
+    timeoutSeconds: 30,
+    memory: '1GB',
+  })
+  .https.onRequest(slackApiApp);
 
 export const firestoreCreateOffer = functions
   .region('asia-northeast1')

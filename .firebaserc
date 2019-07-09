@@ -8,6 +8,9 @@
         "api": [
           "yamiichi-api"
         ],
+        "slack-api": [
+          "yamiichi-slack-api"
+        ],
         "app": [
           "yamiichi-app"
         ]
