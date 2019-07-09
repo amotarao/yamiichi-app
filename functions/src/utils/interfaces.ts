@@ -41,3 +41,11 @@ export interface UserItemDataInterface {
   slackAccessToken: string;
   slackScopes: string[];
 }
+
+export interface TeamItemDataInterface {
+  slackBotAccessToken: string;
+  slackBotUserId: string;
+  slackDefaultChannel: string;
+  slackTeamId: string;
+  slackTeamName: string;
+}
