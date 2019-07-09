@@ -10,7 +10,7 @@ export default async (change: functions.Change<FirebaseFirestore.DocumentSnapsho
 
   if ('currentPrice' in diff) {
     if (afterData.maxPrice >= 0 && afterData.maxPrice <= afterData.currentPrice) {
-      change.after.ref.set(
+      await change.after.ref.set(
         {
           active: false,
         },
