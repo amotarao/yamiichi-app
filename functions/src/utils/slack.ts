@@ -1,17 +1,10 @@
 import { WebClient } from '@slack/web-api';
 import { generateBiderPriceList } from './bider';
+import { OfferItemDataInterface } from './interfaces';
 
 interface postCreateOfferProps {
   channel: string;
-  item: {
-    id: string;
-    title: string;
-    description?: string;
-    authorId: string;
-    initialPrice: number;
-    maxPrice: number;
-    periodDate: Date;
-  };
+  item: OfferItemDataInterface;
 }
 
 export const postCreateOffer = (client: WebClient, { channel, item }: postCreateOfferProps) => {
@@ -40,14 +33,14 @@ export const divider = {
  * テキストを生成する Props
  */
 interface generateTextProps {
-  title: string;
   isFinished?: boolean;
+  item: OfferItemDataInterface;
 }
 
 /**
  * タイトルを生成する
  */
-export const generateText = ({ title, isFinished = false }: generateTextProps) => {
+export const generateText = ({ isFinished = false, item: { title } }: generateTextProps) => {
   return isFinished ? `＜終了＞ *${title}*` : `【開催中】 *${title}*`;
 };
 
@@ -55,14 +48,14 @@ export const generateText = ({ title, isFinished = false }: generateTextProps) =
  * タイトルを生成する Props
  */
 interface generateTitlesProps {
-  title: string;
   isFinished?: boolean;
+  item: OfferItemDataInterface;
 }
 
 /**
  * タイトルを生成する
  */
-export const generateTitles = ({ title, isFinished = false }: generateTitlesProps) => {
+export const generateTitles = ({ isFinished = false, item: { title } }: generateTitlesProps) => {
   return [
     {
       type: 'section',
@@ -78,13 +71,13 @@ export const generateTitles = ({ title, isFinished = false }: generateTitlesProp
  * メタ情報を生成する Props
  */
 interface generateMetaInfosProps {
-  periodDate: Date;
+  item: OfferItemDataInterface;
 }
 
 /**
  * メタ情報を生成する
  */
-export const generateMetaInfos = ({ periodDate }: generateMetaInfosProps) => {
+export const generateMetaInfos = ({ item: { periodDate } }: generateMetaInfosProps) => {
   return [
     {
       type: 'context',
@@ -104,26 +97,14 @@ export const generateMetaInfos = ({ periodDate }: generateMetaInfosProps) => {
  * 商品データを生成する Props
  */
 interface generateOfferFieldsProps {
-  title: string;
-  description?: string;
-  authorId: string;
-  lastBidderId?: string;
-  initialPrice: number;
-  currentPrice?: number;
-  maxPrice?: number;
+  item: OfferItemDataInterface;
 }
 
 /**
  * 商品データを生成する
  */
 export const generateOfferFields = ({
-  title,
-  description = '',
-  authorId,
-  lastBidderId = '',
-  initialPrice,
-  currentPrice = -1,
-  maxPrice = -1,
+  item: { title, description = '', authorId, lastBidderId = '', initialPrice, currentPrice, maxPrice },
 }: generateOfferFieldsProps) => {
   const fields = [];
 
@@ -193,16 +174,13 @@ export const generateOfferFields = ({
  */
 interface generateBidActionsProps {
   id: string;
-  title: string;
-  initialPrice: number;
-  currentPrice?: number;
-  maxPrice?: number;
+  item: OfferItemDataInterface;
 }
 
 /**
  * 入札アクションを生成する
  */
-export const generateBidActions = ({ id, title, initialPrice, currentPrice = -1, maxPrice = -1 }: generateBidActionsProps) => {
+export const generateBidActions = ({ id, item: { title, initialPrice, currentPrice, maxPrice } }: generateBidActionsProps) => {
   const elements = [];
 
   const priceList = generateBiderPriceList(initialPrice, currentPrice, maxPrice, 5);
