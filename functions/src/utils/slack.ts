@@ -1,22 +1,27 @@
 import { WebClient } from '@slack/web-api';
 import { generateBiderPriceList } from './bider';
-import { OfferItemDataInterface } from './interfaces';
+import { OfferItemDataInterface, OfferItemRegistrationInterface } from './interfaces';
+
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
 interface postCreateOfferProps {
   channel: string;
-  item: OfferItemDataInterface;
+  id: string;
+  authorId: string;
+  periodDate: Date;
+  item: Omit<OfferItemRegistrationInterface, 'tmp'>;
 }
 
-export const postCreateOffer = (client: WebClient, { channel, item }: postCreateOfferProps) => {
+export const postCreateOffer = (client: WebClient, { channel, id, authorId, periodDate, item }: postCreateOfferProps) => {
   const blocks = [
-    ...generateTitles({ ...item }),
-    ...generateOfferFields({ ...item }),
-    ...generateMetaInfos({ ...item }),
-    ...generateBidActions({ ...item, currentPrice: -1 }),
+    ...generateTitles({ item }),
+    ...generateOfferFields({ item: { ...item, lastBidderRef: null, currentPrice: -1 }, authorId }),
+    ...generateMetaInfos({ periodDate }),
+    ...generateBidActions({ item: { ...item, currentPrice: -1 }, id }),
   ];
 
   return client.chat.postMessage({
-    text: generateText({ ...item }),
+    text: generateText({ item }),
     channel,
     blocks,
   });
@@ -34,7 +39,7 @@ export const divider = {
  */
 interface generateTextProps {
   isFinished?: boolean;
-  item: OfferItemDataInterface;
+  item: Pick<OfferItemDataInterface, 'title'>;
 }
 
 /**
@@ -49,7 +54,7 @@ export const generateText = ({ isFinished = false, item: { title } }: generateTe
  */
 interface generateTitlesProps {
   isFinished?: boolean;
-  item: OfferItemDataInterface;
+  item: Pick<OfferItemDataInterface, 'title'>;
 }
 
 /**
@@ -71,13 +76,13 @@ export const generateTitles = ({ isFinished = false, item: { title } }: generate
  * メタ情報を生成する Props
  */
 interface generateMetaInfosProps {
-  item: OfferItemDataInterface;
+  periodDate: Date;
 }
 
 /**
  * メタ情報を生成する
  */
-export const generateMetaInfos = ({ item: { periodDate } }: generateMetaInfosProps) => {
+export const generateMetaInfos = ({ periodDate }: generateMetaInfosProps) => {
   return [
     {
       type: 'context',
@@ -97,14 +102,16 @@ export const generateMetaInfos = ({ item: { periodDate } }: generateMetaInfosPro
  * 商品データを生成する Props
  */
 interface generateOfferFieldsProps {
-  item: OfferItemDataInterface;
+  authorId: string;
+  item: Pick<OfferItemDataInterface, 'title' | 'description' | 'lastBidderRef' | 'initialPrice' | 'currentPrice' | 'maxPrice'>;
 }
 
 /**
  * 商品データを生成する
  */
 export const generateOfferFields = ({
-  item: { title, description = '', authorId, lastBidderId = '', initialPrice, currentPrice, maxPrice },
+  authorId,
+  item: { title, description = '', lastBidderRef = null, initialPrice, currentPrice, maxPrice },
 }: generateOfferFieldsProps) => {
   const fields = [];
 
@@ -119,11 +126,17 @@ export const generateOfferFields = ({
     }
   );
 
-  if (lastBidderId) {
-    fields.push({
-      type: 'mrkdwn',
-      text: `最終入札者\n*<@${lastBidderId}>*`,
-    });
+  if (lastBidderRef) {
+    const matches = lastBidderRef.id.match(/.+-(.+)/);
+
+    if (matches) {
+      const [, user] = matches;
+
+      fields.push({
+        type: 'mrkdwn',
+        text: `最終入札者\n*<@${user}>*`,
+      });
+    }
   }
 
   if (maxPrice >= 0) {
@@ -174,7 +187,7 @@ export const generateOfferFields = ({
  */
 interface generateBidActionsProps {
   id: string;
-  item: OfferItemDataInterface;
+  item: Pick<OfferItemDataInterface, 'title' | 'initialPrice' | 'currentPrice' | 'maxPrice'>;
 }
 
 /**
