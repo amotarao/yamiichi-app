@@ -11,7 +11,7 @@ export default async (snap: FirebaseFirestore.DocumentSnapshot, context: functio
   console.log(snap);
   const {
     tmp: { periodDuration, uid },
-    ...props
+    ...item
   } = snap.data() as OfferItemRegistrationInterface;
   const { id } = snap;
 
@@ -40,8 +40,24 @@ export default async (snap: FirebaseFirestore.DocumentSnapshot, context: functio
   );
 
   const client = new WebClient(slackBotAccessToken);
-  const result = await postCreateOffer(client, { channel: slackDefaultChannel, item: { ...props, id, authorId: slackUserId, periodDate } });
-  console.log(result);
+  const { ok, channel = null, ts = null, ...postResult } = await postCreateOffer(client, {
+    channel: slackDefaultChannel,
+    id,
+    authorId: slackUserId,
+    periodDate,
+    item,
+  });
+  console.log({ ok, channel, ts, ...postResult });
+
+  await snap.ref.collection('posts').add({
+    type: 'createOffer',
+    service: 'slack',
+    slack: {
+      ok,
+      channel,
+      ts,
+    },
+  });
 
   return;
 };
