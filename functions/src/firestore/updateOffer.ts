@@ -1,6 +1,8 @@
+import { WebClient } from '@slack/web-api';
 import * as functions from 'firebase-functions';
 import * as _ from 'lodash';
-import { OfferItemDataInterface } from '../utils/interfaces';
+import { OfferItemDataInterface, TeamItemDataInterface } from '../utils/interfaces';
+import { postBidOffer } from '../utils/slack';
 
 export default async (change: functions.Change<FirebaseFirestore.DocumentSnapshot>) => {
   const afterData = change.after.data() as OfferItemDataInterface;
@@ -16,6 +18,41 @@ export default async (change: functions.Change<FirebaseFirestore.DocumentSnapsho
         },
         { merge: true }
       );
+      return;
+    } else {
+      const originalPost = await change.after.ref
+        .collection('posts')
+        .where('type', '==', 'createOffer')
+        .where('service', '==', 'slack')
+        .limit(1)
+        .get();
+      const {
+        slack: { ts: originalTs },
+      } = originalPost.docs[0].data();
+
+      const team = await afterData.teamRef.get();
+      const { slackBotAccessToken, slackDefaultChannel } = team.data() as TeamItemDataInterface;
+      const client = new WebClient(slackBotAccessToken);
+
+      const { ok, channel = null, ts = null, ...postResult } = await postBidOffer(client, {
+        channel: slackDefaultChannel,
+        ts: originalTs,
+        id: change.after.id,
+        authorId: afterData.authorRef.id,
+        item: { ...afterData },
+      });
+      console.log({ ok, channel, ts, ...postResult });
+
+      await change.after.ref.collection('posts').add({
+        type: 'updateOffer',
+        service: 'slack',
+        slack: {
+          ok,
+          channel,
+          ts,
+        },
+      });
+
       return;
     }
   }

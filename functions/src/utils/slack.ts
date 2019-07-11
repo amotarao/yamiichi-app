@@ -27,6 +27,30 @@ export const postCreateOffer = (client: WebClient, { channel, id, authorId, peri
   });
 };
 
+interface postBidOfferProps {
+  channel: string;
+  ts: string;
+  id: string;
+  authorId: string;
+  item: OfferItemDataInterface;
+}
+
+export const postBidOffer = (client: WebClient, { channel, ts, id, authorId, item }: postBidOfferProps) => {
+  const blocks = [
+    ...generateTitles({ item }),
+    ...generateOfferFields({ item, authorId }),
+    ...generateMetaInfos({ periodDate: item.periodDate.toDate() }),
+    ...generateBidActions({ item, id }),
+  ];
+
+  return client.chat.update({
+    text: generateText({ item }),
+    channel,
+    ts,
+    blocks,
+  });
+};
+
 /**
  * 罫線
  */
@@ -102,32 +126,43 @@ export const generateMetaInfos = ({ periodDate }: generateMetaInfosProps) => {
  * 商品データを生成する Props
  */
 interface generateOfferFieldsProps {
-  authorId: string;
-  item: Pick<OfferItemDataInterface, 'title' | 'description' | 'lastBidderRef' | 'initialPrice' | 'currentPrice' | 'maxPrice'>;
+  authorId?: string;
+  item: Pick<OfferItemDataInterface, 'title' | 'description' | 'authorRef' | 'lastBidderRef' | 'initialPrice' | 'currentPrice' | 'maxPrice'>;
 }
 
 /**
  * 商品データを生成する
  */
 export const generateOfferFields = ({
-  authorId,
-  item: { title, description = '', lastBidderRef = null, initialPrice, currentPrice, maxPrice },
+  authorId = null,
+  item: { title, description = '', authorRef, lastBidderRef = null, initialPrice, currentPrice, maxPrice },
 }: generateOfferFieldsProps) => {
   const fields = [];
 
-  fields.push(
-    {
-      type: 'mrkdwn',
-      text: `商品名\n*${title}*`,
-    },
-    {
+  fields.push({
+    type: 'mrkdwn',
+    text: `商品名\n*${title}*`,
+  });
+
+  if (authorId) {
+    fields.push({
       type: 'mrkdwn',
       text: `出品者\n*<@${authorId}>*`,
+    });
+  } else {
+    const matches = authorRef.id.match(/slack:.+-(.+)/);
+
+    if (matches) {
+      const [, user] = matches;
+      fields.push({
+        type: 'mrkdwn',
+        text: `最終入札者\n*<@${user}>*`,
+      });
     }
-  );
+  }
 
   if (lastBidderRef) {
-    const matches = lastBidderRef.id.match(/.+-(.+)/);
+    const matches = lastBidderRef.id.match(/slack:.+-(.+)/);
 
     if (matches) {
       const [, user] = matches;
