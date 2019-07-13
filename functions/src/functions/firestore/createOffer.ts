@@ -1,9 +1,9 @@
 import { WebClient } from '@slack/web-api';
 import * as functions from 'firebase-functions';
 import * as moment from 'moment';
-import { firestore } from '../modules/firebase';
-import { UserItemDataInterface, OfferItemRegistrationInterface, TeamItemDataInterface } from '../utils/interfaces';
-import { postCreateOffer } from '../utils/slack';
+import { firestore } from '../../modules/firebase';
+import { UserItemDataInterface, OfferItemRegistrationInterface, TeamItemDataInterface } from '../../utils/interfaces';
+import { postCreateOffer } from '../../utils/slack';
 
 const usersCollection = firestore.collection('users');
 
