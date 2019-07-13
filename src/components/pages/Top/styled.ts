@@ -23,6 +23,10 @@ export const TitleStyle = css`
     font-size: 2.4rem;
     line-height: 1;
     margin-bottom: 0.8em;
+
+    > .version {
+      font-size: 0.7em;
+    }
   }
 `;
 
@@ -44,6 +48,27 @@ export const CatchStyle = css`
       &.p1 {
         margin-right: -0.5em;
       }
+    }
+  }
+`;
+
+export const CautionStyle = css`
+  && {
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 0.7rem;
+    justify-content: center;
+    line-height: 1.5;
+    margin-top: 1.6em;
+    padding: 0 4em;
+    text-align: center;
+
+    > span {
+      white-space: nowrap;
+    }
+
+    > a {
+      color: inherit;
     }
   }
 `;

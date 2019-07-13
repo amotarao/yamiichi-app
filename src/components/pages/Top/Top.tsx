@@ -3,7 +3,7 @@ import { jsx } from '@emotion/core';
 import React from 'react';
 import { slackScopes } from '../../../utils/slack';
 import { LoadingCircle } from '../../atoms/LoadingCircle';
-import { HeaderStyle, TitleStyle, CatchStyle } from './styled';
+import { HeaderStyle, TitleStyle, CatchStyle, CautionStyle } from './styled';
 
 export interface TopProps {
   className?: string;
@@ -15,7 +15,9 @@ export const Top: React.FC<TopProps> = ({ className, isLoading }) => {
     <div className={className}>
       <LoadingCircle isLoading={isLoading} />
       <header css={HeaderStyle}>
-        <h1 css={TitleStyle}>Yamiichi</h1>
+        <h1 css={TitleStyle}>
+          Yamiichi<span className="version">&nbsp;Beta</span>
+        </h1>
         <p css={CatchStyle}>
           <span className="p1">Slackで簡単、</span>
           <span className="p2">闇市</span>
@@ -29,6 +31,15 @@ export const Top: React.FC<TopProps> = ({ className, isLoading }) => {
             srcSet="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"
           />
         </a>
+        <p css={CautionStyle}>
+          <span>※ 現在ベータ版のため、</span>
+          <span>ログインできる Slack チームを制限しています。</span>
+        </p>
+        <p css={CautionStyle}>
+          <a href="https://github.com/amotarao/yamiichi-app" target="_blank" rel="noopener noreferrer">
+            GitHub
+          </a>
+        </p>
       </header>
     </div>
   );
