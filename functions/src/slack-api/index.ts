@@ -67,8 +67,8 @@ app.post('/action', async (req, res) => {
         userId: user.id,
         value: value2,
       });
-      if (!result) {
-        res.status(403).end();
+      if (result.error) {
+        res.status(200).send(result.result);
         return;
       }
       res.status(200).end();

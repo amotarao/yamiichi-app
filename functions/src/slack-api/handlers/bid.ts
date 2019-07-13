@@ -1,4 +1,5 @@
 import { firestore } from '../../modules/firebase';
+import { checkFinishedOffer } from '../../modules/firestore/checkFinishedOffer';
 import { OfferItemDataInterface } from '../../utils/interfaces';
 
 const offersCollection = firestore.collection('offers');
@@ -11,7 +12,7 @@ interface bidHandlerProps {
   value: string;
 }
 
-export const bidHandler = async (props: bidHandlerProps) => {
+export const bidHandler = async (props: bidHandlerProps): { error: boolean; result: FirebaseFirestore.DocumentReference | string } => {
   const now = new Date();
 
   const offerId = props.offerId;
@@ -24,31 +25,34 @@ export const bidHandler = async (props: bidHandlerProps) => {
   const errors = [];
 
   if (!Number.isInteger(price)) {
-    errors.push('hasError1');
+    errors.push('入札金額が整数ではない');
   }
   if (!active) {
-    errors.push('hasError2');
+    errors.push('出品が公開されていない');
   }
   if (finished) {
-    errors.push('hasError3');
+    errors.push('出品が終了している');
   }
   if (!(currentPrice < price)) {
-    errors.push('hasError4');
+    errors.push('入札金額が現在の価格を下回っている');
   }
   if (!(initialPrice <= price)) {
-    errors.push('hasError5');
+    errors.push('入札金額が出品価格を下回っている');
   }
   if (!(maxPrice < 0 || maxPrice >= price)) {
-    errors.push('hasError6');
+    errors.push('入札金額が落札価格を上回っている');
   }
   if (!(periodDate.seconds * 1000 >= now.getTime())) {
-    errors.push('hasError7');
+    errors.push('出品が終了している');
   }
 
-  console.log(errors);
-
   if (errors.length) {
-    return false;
+    console.log(errors);
+    await checkFinishedOffer();
+    return {
+      error: true,
+      result: errors.join('\n'),
+    };
   }
 
   const userRef = usersCollection.doc(uid);
@@ -60,10 +64,15 @@ export const bidHandler = async (props: bidHandlerProps) => {
     await userRef.set({ userData });
   }
 
-  return offerDoc.collection('biders').add({
+  const result = await offerDoc.collection('biders').add({
     price,
     tmp: {
       uid,
     },
   });
+
+  return {
+    error: false,
+    result,
+  };
 };
