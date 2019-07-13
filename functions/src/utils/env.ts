@@ -5,4 +5,5 @@ export const env = functions.config().app as {
   slack_client_id: string;
   slack_client_secret: string;
   slack_verification_token: string;
+  arrow_teams: string;
 };
