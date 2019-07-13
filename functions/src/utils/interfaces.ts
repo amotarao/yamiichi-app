@@ -2,6 +2,7 @@ export interface OfferItemDataInterface {
   title: string;
   description?: string;
   active: boolean;
+  finished: boolean;
   authorRef: FirebaseFirestore.DocumentReference;
   lastBidderRef: FirebaseFirestore.DocumentReference | null;
   teamRef: FirebaseFirestore.DocumentReference;

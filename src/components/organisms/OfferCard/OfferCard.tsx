@@ -114,8 +114,8 @@ export const OfferCard: React.FC<OfferCardProps> = ({
     })();
   }, [props.lastBidderRef, getUserById]);
 
-  const finished = props.periodDate.toDate().getTime() < new Date().getTime();
-  const bidDisabled = !props.active || (hasMaxPrice && props.maxPrice <= props.currentPrice) || finished || !isActiveBidButton;
+  const finished = props.finished || props.periodDate.toDate().getTime() < new Date().getTime();
+  const bidDisabled = (hasMaxPrice && props.maxPrice <= props.currentPrice) || finished || !isActiveBidButton;
 
   return (
     <Paper css={WrapperStyle} className={`rowspan-3 rowspan-${[2, 3][Math.floor(Math.random() * 2)]}`} elevation={1}>

@@ -28,6 +28,7 @@ export default async (snap: FirebaseFirestore.DocumentSnapshot, context: functio
   await snap.ref.set(
     {
       active: true,
+      finished: false,
       authorRef: usersCollection.doc(uid),
       lastBidderRef: null,
       teamRef,

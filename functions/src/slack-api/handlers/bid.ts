@@ -19,7 +19,7 @@ export const bidHandler = async (props: bidHandlerProps) => {
   const price = Number(props.value);
 
   const offerDoc = offersCollection.doc(offerId);
-  const { active, currentPrice, initialPrice, maxPrice, periodDate } = (await offerDoc.get()).data() as OfferItemDataInterface;
+  const { active, finished, currentPrice, initialPrice, maxPrice, periodDate } = (await offerDoc.get()).data() as OfferItemDataInterface;
 
   const errors = [];
 
@@ -29,17 +29,20 @@ export const bidHandler = async (props: bidHandlerProps) => {
   if (!active) {
     errors.push('hasError2');
   }
-  if (!(currentPrice < price)) {
+  if (finished) {
     errors.push('hasError3');
   }
-  if (!(initialPrice <= price)) {
+  if (!(currentPrice < price)) {
     errors.push('hasError4');
   }
-  if (!(maxPrice < 0 || maxPrice >= price)) {
+  if (!(initialPrice <= price)) {
     errors.push('hasError5');
   }
-  if (!(periodDate.seconds * 1000 >= now.getTime())) {
+  if (!(maxPrice < 0 || maxPrice >= price)) {
     errors.push('hasError6');
+  }
+  if (!(periodDate.seconds * 1000 >= now.getTime())) {
+    errors.push('hasError7');
   }
 
   console.log(errors);

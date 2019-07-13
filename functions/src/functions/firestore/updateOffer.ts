@@ -14,7 +14,7 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
     if (afterData.maxPrice >= 0 && afterData.maxPrice <= afterData.currentPrice) {
       await after.ref.set(
         {
-          active: false,
+          finished: true,
         },
         { merge: true }
       );
