@@ -4,6 +4,7 @@ import slackApiApp from './slack-api';
 import createOffer from './functions/firestore/createOffer';
 import updateOffer from './functions/firestore/updateOffer';
 import createOfferBider from './functions/firestore/createOfferBider';
+import checkFinishedOffer from './functions/pubsub/checkFinishedOffer';
 
 export const api = functions
   .runWith({
@@ -31,3 +32,8 @@ export const firestoreCreateOfferBider = functions
   .region('asia-northeast1')
   .firestore.document('offers/{offerId}/biders/{biderId}')
   .onCreate(createOfferBider);
+export const pubsubCheckFinishedOffer = functions
+  .region('asia-northeast1')
+  .pubsub.schedule('every 1 minutes')
+  .timeZone('Asia/Tokyo')
+  .onRun(checkFinishedOffer);
