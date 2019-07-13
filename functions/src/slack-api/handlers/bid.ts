@@ -14,7 +14,7 @@ export const bidHandler = async (props: bidHandlerProps) => {
   const now = new Date();
 
   const offerId = props.offerId;
-  const uid = `${props.teamId}-${props.userId}`;
+  const uid = `slack:${props.teamId}-${props.userId}`;
   const price = Number(props.value);
 
   const offerDoc = offersCollection.doc(offerId);
