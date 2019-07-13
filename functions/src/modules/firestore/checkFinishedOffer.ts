@@ -4,7 +4,7 @@ export const checkFinishedOffer = async () => {
   const now = new Date();
   const snapshot = await firestore
     .collection('offers')
-    .where('periodDate', '>=', now)
+    .where('periodDate', '<', now)
     .where('active', '==', true)
     .where('finished', '==', false)
     .get();
