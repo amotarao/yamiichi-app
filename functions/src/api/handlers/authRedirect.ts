@@ -48,6 +48,15 @@ export default async (req: Request, res: Response) => {
     return;
   }
 
+  /**
+   * 登録できるチームの制限
+   */
+  const arrowTeams = env.arrow_teams.split(',');
+  if (!arrowTeams.includes(team_id)) {
+    res.status(403).send('現在、登録できる Slack Team を制限しています');
+    return;
+  }
+
   const uid = `slack:${team_id}-${user_id}`;
 
   const setDocs = [];
