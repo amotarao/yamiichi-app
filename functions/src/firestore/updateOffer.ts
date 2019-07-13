@@ -38,7 +38,6 @@ export default async (change: functions.Change<FirebaseFirestore.DocumentSnapsho
         channel: slackDefaultChannel,
         ts: originalTs,
         id: change.after.id,
-        authorId: afterData.authorRef.id,
         item: { ...afterData },
       });
       console.log({ ok, channel, ts, ...postResult });

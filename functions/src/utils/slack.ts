@@ -13,15 +13,17 @@ interface postCreateOfferProps {
 }
 
 export const postCreateOffer = (client: WebClient, { channel, id, authorId, periodDate, item }: postCreateOfferProps) => {
+  const author = authorId;
+
   const blocks = [
-    ...generateTitles({ item }),
-    ...generateOfferFields({ item: { ...item, lastBidderRef: null, currentPrice: -1 }, authorId }),
+    ...generateTitles({ ...item }),
+    ...generateOfferFields({ ...item, author, currentPrice: -1 }),
     ...generateMetaInfos({ periodDate }),
-    ...generateBidActions({ item: { ...item, currentPrice: -1 }, id }),
+    ...generateBidActions({ ...item, currentPrice: -1, id }),
   ];
 
   return client.chat.postMessage({
-    text: generateText({ item }),
+    text: generateText({ ...item }),
     channel,
     blocks,
   });
@@ -31,20 +33,25 @@ interface postBidOfferProps {
   channel: string;
   ts: string;
   id: string;
-  authorId: string;
   item: OfferItemDataInterface;
 }
 
-export const postBidOffer = (client: WebClient, { channel, ts, id, authorId, item }: postBidOfferProps) => {
+export const postBidOffer = (client: WebClient, { channel, ts, id, item }: postBidOfferProps) => {
+  const authorMatches = item.authorRef.id.match(/slack:.+-(.+)/);
+  const author = authorMatches ? authorMatches[1] : '';
+
+  const lastBidderMatches = item.lastBidderRef!.id.match(/slack:.+-(.+)/);
+  const lastBidder = lastBidderMatches ? lastBidderMatches[1] : '';
+
   const blocks = [
-    ...generateTitles({ item }),
-    ...generateOfferFields({ item, authorId }),
+    ...generateTitles({ ...item }),
+    ...generateOfferFields({ ...item, author, lastBidder }),
     ...generateMetaInfos({ periodDate: item.periodDate.toDate() }),
-    ...generateBidActions({ item, id }),
+    ...generateBidActions({ ...item, id }),
   ];
 
   return client.chat.update({
-    text: generateText({ item }),
+    text: generateText({ ...item }),
     channel,
     ts,
     blocks,
@@ -62,14 +69,14 @@ export const divider = {
  * テキストを生成する Props
  */
 interface generateTextProps {
+  title: string;
   isFinished?: boolean;
-  item: Pick<OfferItemDataInterface, 'title'>;
 }
 
 /**
  * タイトルを生成する
  */
-export const generateText = ({ isFinished = false, item: { title } }: generateTextProps) => {
+export const generateText = ({ title, isFinished = false }: generateTextProps) => {
   return isFinished ? `＜終了＞ *${title}*` : `【開催中】 *${title}*`;
 };
 
@@ -77,14 +84,14 @@ export const generateText = ({ isFinished = false, item: { title } }: generateTe
  * タイトルを生成する Props
  */
 interface generateTitlesProps {
+  title: string;
   isFinished?: boolean;
-  item: Pick<OfferItemDataInterface, 'title'>;
 }
 
 /**
  * タイトルを生成する
  */
-export const generateTitles = ({ isFinished = false, item: { title } }: generateTitlesProps) => {
+export const generateTitles = ({ title, isFinished = false }: generateTitlesProps) => {
   return [
     {
       type: 'section',
@@ -126,17 +133,19 @@ export const generateMetaInfos = ({ periodDate }: generateMetaInfosProps) => {
  * 商品データを生成する Props
  */
 interface generateOfferFieldsProps {
-  authorId?: string;
-  item: Pick<OfferItemDataInterface, 'title' | 'description' | 'authorRef' | 'lastBidderRef' | 'initialPrice' | 'currentPrice' | 'maxPrice'>;
+  title: string;
+  description?: string;
+  author: string;
+  lastBidder?: string;
+  initialPrice: number;
+  currentPrice: number;
+  maxPrice: number;
 }
 
 /**
  * 商品データを生成する
  */
-export const generateOfferFields = ({
-  authorId = null,
-  item: { title, description = '', authorRef, lastBidderRef = null, initialPrice, currentPrice, maxPrice },
-}: generateOfferFieldsProps) => {
+export const generateOfferFields = ({ title, description = '', author, lastBidder = '', initialPrice, currentPrice, maxPrice }: generateOfferFieldsProps) => {
   const fields = [];
 
   fields.push({
@@ -144,34 +153,16 @@ export const generateOfferFields = ({
     text: `商品名\n*${title}*`,
   });
 
-  if (authorId) {
+  fields.push({
+    type: 'mrkdwn',
+    text: `出品者\n*<@${author}>*`,
+  });
+
+  if (lastBidder) {
     fields.push({
       type: 'mrkdwn',
-      text: `出品者\n*<@${authorId}>*`,
+      text: `最終入札者\n*<@${lastBidder}>*`,
     });
-  } else {
-    const matches = authorRef.id.match(/slack:.+-(.+)/);
-
-    if (matches) {
-      const [, user] = matches;
-      fields.push({
-        type: 'mrkdwn',
-        text: `最終入札者\n*<@${user}>*`,
-      });
-    }
-  }
-
-  if (lastBidderRef) {
-    const matches = lastBidderRef.id.match(/slack:.+-(.+)/);
-
-    if (matches) {
-      const [, user] = matches;
-
-      fields.push({
-        type: 'mrkdwn',
-        text: `最終入札者\n*<@${user}>*`,
-      });
-    }
   }
 
   if (maxPrice >= 0) {
@@ -222,13 +213,16 @@ export const generateOfferFields = ({
  */
 interface generateBidActionsProps {
   id: string;
-  item: Pick<OfferItemDataInterface, 'title' | 'initialPrice' | 'currentPrice' | 'maxPrice'>;
+  title: string;
+  initialPrice: number;
+  currentPrice: number;
+  maxPrice: number;
 }
 
 /**
  * 入札アクションを生成する
  */
-export const generateBidActions = ({ id, item: { title, initialPrice, currentPrice, maxPrice } }: generateBidActionsProps) => {
+export const generateBidActions = ({ id, title, initialPrice, currentPrice, maxPrice }: generateBidActionsProps) => {
   const elements = [];
 
   const priceList = generateBiderPriceList(initialPrice, currentPrice, maxPrice, 5);
