@@ -33,10 +33,11 @@ interface updateOfferProps {
   channel: string;
   ts: string;
   id: string;
+  isFinished?: boolean;
   item: OfferItemDataInterface;
 }
 
-export const updateOffer = (client: WebClient, { channel, ts, id, item }: updateOfferProps) => {
+export const updateOffer = (client: WebClient, { channel, ts, id, isFinished = false, item }: updateOfferProps) => {
   const authorMatches = item.authorRef.id.match(/slack:.+-(.+)/);
   const author = authorMatches ? authorMatches[1] : '';
 
@@ -44,11 +45,14 @@ export const updateOffer = (client: WebClient, { channel, ts, id, item }: update
   const lastBidder = lastBidderMatches ? lastBidderMatches[1] : '';
 
   const blocks = [
-    ...generateTitles({ ...item }),
-    ...generateOfferFields({ ...item, author, lastBidder }),
-    ...generateMetaInfos({ periodDate: item.periodDate.toDate() }),
-    ...generateBidActions({ ...item, id }),
+    ...generateTitles({ ...item, isFinished }),
+    ...generateOfferFields({ ...item, author, lastBidder, isFinished }),
+    ...generateMetaInfos({ periodDate: item.periodDate.toDate(), isFinished }),
   ];
+
+  if (!isFinished) {
+    blocks.push(...generateBidActions({ ...item, id }));
+  }
 
   return client.chat.update({
     text: generateText({ ...item }),
@@ -61,14 +65,17 @@ export const updateOffer = (client: WebClient, { channel, ts, id, item }: update
 interface postBidOfferProps {
   channel: string;
   thread_ts: string;
+  isFinished?: boolean;
   item: OfferItemDataInterface;
 }
 
-export const postBidOffer = (client: WebClient, { channel, thread_ts, item }: postBidOfferProps) => {
+export const postBidOffer = (client: WebClient, { channel, thread_ts, isFinished = false, item }: postBidOfferProps) => {
   const lastBidderMatches = item.lastBidderRef!.id.match(/slack:.+-(.+)/);
   const lastBidder = lastBidderMatches ? lastBidderMatches[1] : '';
 
-  const text = `<@${lastBidder}> が ¥ ${item.currentPrice.toLocaleString()} で入札`;
+  const text = isFinished
+    ? `<@${lastBidder}> が ¥ ${item.currentPrice.toLocaleString()} で入札`
+    : `<@${lastBidder}> が ¥ ${item.currentPrice.toLocaleString()} で落札`;
 
   return client.chat.postMessage({
     text,
@@ -128,21 +135,25 @@ export const generateTitles = ({ title, isFinished = false }: generateTitlesProp
  */
 interface generateMetaInfosProps {
   periodDate: Date;
+  isFinished?: boolean;
 }
 
 /**
  * メタ情報を生成する
  */
-export const generateMetaInfos = ({ periodDate }: generateMetaInfosProps) => {
+export const generateMetaInfos = ({ periodDate, isFinished = false }: generateMetaInfosProps) => {
+  const time = Math.floor(periodDate.getTime() / 1000);
+  const text = isFinished
+    ? '<https://yamiichi.app/|闇市で簡単出品>'
+    : `<!date^${time}^{date} at {time}|${periodDate.toLocaleString()}> に終了\n<https://yamiichi.app/|闇市で簡単出品>`;
+
   return [
     {
       type: 'context',
       elements: [
         {
           type: 'mrkdwn',
-          text: `<!date^${Math.floor(
-            periodDate.getTime() / 1000
-          )}^{date} at {time}|${periodDate.toLocaleString()}> に終了\n<https://yamiichi.app/|闇市で簡単出品>`,
+          text,
         },
       ],
     },
@@ -160,12 +171,22 @@ interface generateOfferFieldsProps {
   initialPrice: number;
   currentPrice: number;
   maxPrice: number;
+  isFinished?: boolean;
 }
 
 /**
  * 商品データを生成する
  */
-export const generateOfferFields = ({ title, description = '', author, lastBidder = '', initialPrice, currentPrice, maxPrice }: generateOfferFieldsProps) => {
+export const generateOfferFields = ({
+  title,
+  description = '',
+  author,
+  lastBidder = '',
+  initialPrice,
+  currentPrice,
+  maxPrice,
+  isFinished = false,
+}: generateOfferFieldsProps) => {
   const fields = [];
 
   fields.push({
@@ -181,7 +202,7 @@ export const generateOfferFields = ({ title, description = '', author, lastBidde
   if (lastBidder) {
     fields.push({
       type: 'mrkdwn',
-      text: `最終入札者\n*<@${lastBidder}>*`,
+      text: isFinished ? `落札者\n*<@${lastBidder}>*` : `最終入札者\n*<@${lastBidder}>*`,
     });
   }
 
