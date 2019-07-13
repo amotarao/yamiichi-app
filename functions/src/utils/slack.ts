@@ -33,11 +33,11 @@ interface updateOfferProps {
   channel: string;
   ts: string;
   id: string;
-  isFinished?: boolean;
+  finished?: boolean;
   item: OfferItemDataInterface;
 }
 
-export const updateOffer = (client: WebClient, { channel, ts, id, isFinished = false, item }: updateOfferProps) => {
+export const updateOffer = (client: WebClient, { channel, ts, id, finished = false, item }: updateOfferProps) => {
   const authorMatches = item.authorRef.id.match(/slack:.+-(.+)/);
   const author = authorMatches ? authorMatches[1] : '';
 
@@ -45,12 +45,12 @@ export const updateOffer = (client: WebClient, { channel, ts, id, isFinished = f
   const lastBidder = lastBidderMatches ? lastBidderMatches[1] : '';
 
   const blocks = [
-    ...generateTitles({ ...item, isFinished }),
-    ...generateOfferFields({ ...item, author, lastBidder, isFinished }),
-    ...generateMetaInfos({ periodDate: item.periodDate.toDate(), isFinished }),
+    ...generateTitles({ ...item, finished }),
+    ...generateOfferFields({ ...item, author, lastBidder, finished }),
+    ...generateMetaInfos({ periodDate: item.periodDate.toDate(), finished }),
   ];
 
-  if (!isFinished) {
+  if (!finished) {
     blocks.push(...generateBidActions({ ...item, id }));
   }
 
@@ -65,15 +65,15 @@ export const updateOffer = (client: WebClient, { channel, ts, id, isFinished = f
 interface postBidOfferProps {
   channel: string;
   thread_ts: string;
-  isFinished?: boolean;
+  finished?: boolean;
   item: OfferItemDataInterface;
 }
 
-export const postBidOffer = (client: WebClient, { channel, thread_ts, isFinished = false, item }: postBidOfferProps) => {
+export const postBidOffer = (client: WebClient, { channel, thread_ts, finished = false, item }: postBidOfferProps) => {
   const lastBidderMatches = item.lastBidderRef!.id.match(/slack:.+-(.+)/);
   const lastBidder = lastBidderMatches ? lastBidderMatches[1] : '';
 
-  const text = isFinished
+  const text = finished
     ? `<@${lastBidder}> が ¥ ${item.currentPrice.toLocaleString()} で落札`
     : `<@${lastBidder}> が ¥ ${item.currentPrice.toLocaleString()} で入札`;
 
@@ -97,14 +97,14 @@ export const divider = {
  */
 interface generateTextProps {
   title: string;
-  isFinished?: boolean;
+  finished?: boolean;
 }
 
 /**
  * タイトルを生成する
  */
-export const generateText = ({ title, isFinished = false }: generateTextProps) => {
-  return isFinished ? `＜終了＞ *${title}*` : `【開催中】 *${title}*`;
+export const generateText = ({ title, finished = false }: generateTextProps) => {
+  return finished ? `＜終了＞ *${title}*` : `【開催中】 *${title}*`;
 };
 
 /**
@@ -112,19 +112,19 @@ export const generateText = ({ title, isFinished = false }: generateTextProps) =
  */
 interface generateTitlesProps {
   title: string;
-  isFinished?: boolean;
+  finished?: boolean;
 }
 
 /**
  * タイトルを生成する
  */
-export const generateTitles = ({ title, isFinished = false }: generateTitlesProps) => {
+export const generateTitles = ({ title, finished = false }: generateTitlesProps) => {
   return [
     {
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: isFinished ? `＜終了＞ *${title}*` : `【開催中】 *${title}*`,
+        text: finished ? `＜終了＞ *${title}*` : `【開催中】 *${title}*`,
       },
     },
   ];
@@ -135,15 +135,15 @@ export const generateTitles = ({ title, isFinished = false }: generateTitlesProp
  */
 interface generateMetaInfosProps {
   periodDate: Date;
-  isFinished?: boolean;
+  finished?: boolean;
 }
 
 /**
  * メタ情報を生成する
  */
-export const generateMetaInfos = ({ periodDate, isFinished = false }: generateMetaInfosProps) => {
+export const generateMetaInfos = ({ periodDate, finished = false }: generateMetaInfosProps) => {
   const time = Math.floor(periodDate.getTime() / 1000);
-  const text = isFinished
+  const text = finished
     ? '<https://yamiichi.app/|闇市で簡単出品>'
     : `<!date^${time}^{date} at {time}|${periodDate.toLocaleString()}> に終了\n<https://yamiichi.app/|闇市で簡単出品>`;
 
@@ -171,7 +171,7 @@ interface generateOfferFieldsProps {
   initialPrice: number;
   currentPrice: number;
   maxPrice: number;
-  isFinished?: boolean;
+  finished?: boolean;
 }
 
 /**
@@ -185,7 +185,7 @@ export const generateOfferFields = ({
   initialPrice,
   currentPrice,
   maxPrice,
-  isFinished = false,
+  finished = false,
 }: generateOfferFieldsProps) => {
   const fields = [];
 
@@ -202,7 +202,7 @@ export const generateOfferFields = ({
   if (lastBidder) {
     fields.push({
       type: 'mrkdwn',
-      text: isFinished ? `落札者\n*<@${lastBidder}>*` : `最終入札者\n*<@${lastBidder}>*`,
+      text: finished ? `落札者\n*<@${lastBidder}>*` : `最終入札者\n*<@${lastBidder}>*`,
     });
   }
 

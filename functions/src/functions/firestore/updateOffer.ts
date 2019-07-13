@@ -37,14 +37,14 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
         channel: slackDefaultChannel,
         ts: originalTs,
         id: after.id,
-        isFinished: true,
+        finished: true,
         item: afterData,
       });
 
       const postBidOfferPromise = postBidOffer(client, {
         channel: slackDefaultChannel,
         thread_ts: originalTs,
-        isFinished: true,
+        finished: true,
         item: afterData,
       });
 
