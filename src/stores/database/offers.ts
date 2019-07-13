@@ -16,6 +16,7 @@ export interface OfferItemDataInterface {
   active: boolean;
   authorRef: firebase.firestore.DocumentReference;
   lastBidderRef: firebase.firestore.DocumentReference | null;
+  teamRef: firebase.firestore.DocumentReference;
   initialPrice: number;
   maxPrice: number;
   currentPrice: number;
