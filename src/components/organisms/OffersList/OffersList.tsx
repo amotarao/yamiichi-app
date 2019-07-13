@@ -13,9 +13,11 @@ export interface OffersListProps {
 export const OffersList: React.FC<OffersListProps> = ({ className, items = [] }) => {
   return (
     <div className={className} css={WrapperStyle}>
-      {items.map((item) => (
-        <OfferCardContainer key={item.id} item={item} />
-      ))}
+      {items
+        .sort((a, b) => a.data.periodDate.seconds - b.data.periodDate.seconds)
+        .map((item) => (
+          <OfferCardContainer key={item.id} item={item} />
+        ))}
     </div>
   );
 };
