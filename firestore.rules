@@ -40,6 +40,7 @@ service cloud.firestore {
         allow create: if isLoggedIn()
                       && request.resource.data.price is int
                       && getOfferDoc(offerID).data.active
+                      && !getOfferDoc(offerID).data.finished
                       && getOfferDoc(offerID).data.currentPrice < request.resource.data.price
                       && getOfferDoc(offerID).data.initialPrice <= request.resource.data.price
                       && (getOfferDoc(offerID).data.maxPrice < 0 || getOfferDoc(offerID).data.maxPrice >= request.resource.data.price)

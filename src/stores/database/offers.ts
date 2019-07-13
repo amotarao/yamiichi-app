@@ -14,6 +14,7 @@ export interface OfferItemDataInterface {
   title: string;
   description?: string;
   active: boolean;
+  finished: boolean;
   authorRef: firebase.firestore.DocumentReference;
   lastBidderRef: firebase.firestore.DocumentReference | null;
   teamRef: firebase.firestore.DocumentReference;
@@ -50,32 +51,35 @@ const useOffers = () => {
       return;
     }
 
-    offersCollection.where('teamRef', '==', teamsCollection.doc(teamId)).onSnapshot((snapshot) => {
-      setLoading(false);
+    offersCollection
+      .where('teamRef', '==', teamsCollection.doc(teamId))
+      .where('active', '==', true)
+      .onSnapshot((snapshot) => {
+        setLoading(false);
 
-      snapshot.docChanges().forEach(({ type, doc }) => {
-        const item = {
-          id: doc.id,
-          data: doc.data() as OfferItemDataInterface,
-        };
-        const index = tmpItems.findIndex((e) => e.id === item.id);
+        snapshot.docChanges().forEach(({ type, doc }) => {
+          const item = {
+            id: doc.id,
+            data: doc.data() as OfferItemDataInterface,
+          };
+          const index = tmpItems.findIndex((e) => e.id === item.id);
 
-        switch (type) {
-          case 'added':
-            tmpItems.push(item);
-            break;
-          case 'modified':
-            tmpItems.splice(index, 1, item);
-            break;
-          case 'removed':
-            tmpItems.splice(index, 1);
-            break;
-          default:
-            break;
-        }
-        setItems([...tmpItems]);
+          switch (type) {
+            case 'added':
+              tmpItems.push(item);
+              break;
+            case 'modified':
+              tmpItems.splice(index, 1, item);
+              break;
+            case 'removed':
+              tmpItems.splice(index, 1);
+              break;
+            default:
+              break;
+          }
+          setItems([...tmpItems]);
+        });
       });
-    });
   }, [teamId]);
 
   const getById = (id: string) => {
