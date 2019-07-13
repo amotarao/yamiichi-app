@@ -2,7 +2,7 @@ import { WebClient } from '@slack/web-api';
 import * as functions from 'firebase-functions';
 import * as _ from 'lodash';
 import { OfferItemDataInterface, TeamItemDataInterface } from '../utils/interfaces';
-import { postBidOffer } from '../utils/slack';
+import { updateOffer } from '../utils/slack';
 
 export default async (change: functions.Change<FirebaseFirestore.DocumentSnapshot>) => {
   const afterData = change.after.data() as OfferItemDataInterface;
@@ -34,7 +34,7 @@ export default async (change: functions.Change<FirebaseFirestore.DocumentSnapsho
       const { slackBotAccessToken, slackDefaultChannel } = team.data() as TeamItemDataInterface;
       const client = new WebClient(slackBotAccessToken);
 
-      const { ok, channel = null, ts = null, ...postResult } = await postBidOffer(client, {
+      const { ok, channel = null, ts = null, ...postResult } = await updateOffer(client, {
         channel: slackDefaultChannel,
         ts: originalTs,
         id: change.after.id,

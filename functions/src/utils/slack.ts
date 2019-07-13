@@ -29,14 +29,14 @@ export const postCreateOffer = (client: WebClient, { channel, id, authorId, peri
   });
 };
 
-interface postBidOfferProps {
+interface updateOfferProps {
   channel: string;
   ts: string;
   id: string;
   item: OfferItemDataInterface;
 }
 
-export const postBidOffer = (client: WebClient, { channel, ts, id, item }: postBidOfferProps) => {
+export const updateOffer = (client: WebClient, { channel, ts, id, item }: updateOfferProps) => {
   const authorMatches = item.authorRef.id.match(/slack:.+-(.+)/);
   const author = authorMatches ? authorMatches[1] : '';
 
