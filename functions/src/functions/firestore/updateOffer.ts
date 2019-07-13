@@ -10,7 +10,9 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
 
   const diff = _.omitBy(afterData, (value, key) => beforeData[key as keyof OfferItemDataInterface] === value);
 
-  if ('finished' in diff) {
+  console.log('diff', diff);
+
+  if ('finished' in diff && diff.finished) {
     console.log('finished');
 
     const originalPost = await after.ref
@@ -58,7 +60,7 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
     return;
   }
 
-  if ('currentPrice' in diff) {
+  if ('currentPrice' in diff && diff.currentPrice !== -1) {
     if (afterData.maxPrice >= 0 && afterData.maxPrice <= afterData.currentPrice) {
       await after.ref.set(
         {
