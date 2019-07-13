@@ -58,6 +58,26 @@ export const updateOffer = (client: WebClient, { channel, ts, id, item }: update
   });
 };
 
+interface postBidOfferProps {
+  channel: string;
+  thread_ts: string;
+  item: OfferItemDataInterface;
+}
+
+export const postBidOffer = (client: WebClient, { channel, thread_ts, item }: postBidOfferProps) => {
+  const lastBidderMatches = item.lastBidderRef!.id.match(/slack:.+-(.+)/);
+  const lastBidder = lastBidderMatches ? lastBidderMatches[1] : '';
+
+  const text = `<@${lastBidder}> が ¥ ${item.currentPrice.toLocaleString()} で入札`;
+
+  return client.chat.postMessage({
+    text,
+    channel,
+    thread_ts,
+    reply_broadcast: true,
+  });
+};
+
 /**
  * 罫線
  */
