@@ -65,7 +65,6 @@ export default async (req: Request, res: Response) => {
   const teamData = {
     slackBotAccessToken: bot.bot_access_token,
     slackBotUserId: bot.bot_user_id,
-    slackDefaultChannel: '',
     slackTeamId: team_id,
     slackTeamName: team_name,
   };
