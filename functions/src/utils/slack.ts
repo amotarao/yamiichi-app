@@ -74,8 +74,8 @@ export const postBidOffer = (client: WebClient, { channel, thread_ts, isFinished
   const lastBidder = lastBidderMatches ? lastBidderMatches[1] : '';
 
   const text = isFinished
-    ? `<@${lastBidder}> が ¥ ${item.currentPrice.toLocaleString()} で入札`
-    : `<@${lastBidder}> が ¥ ${item.currentPrice.toLocaleString()} で落札`;
+    ? `<@${lastBidder}> が ¥ ${item.currentPrice.toLocaleString()} で落札`
+    : `<@${lastBidder}> が ¥ ${item.currentPrice.toLocaleString()} で入札`;
 
   return client.chat.postMessage({
     text,
