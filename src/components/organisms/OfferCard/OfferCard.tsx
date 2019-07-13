@@ -46,6 +46,7 @@ export const OfferCard: React.FC<OfferCardProps> = ({
   const [lastBidder, setLastBidder] = useState<PublicUserItemInterface | undefined>(undefined);
   const biderPriceList = generateBiderPriceList(props.initialPrice, props.currentPrice, props.maxPrice, 5);
   const hasMaxPrice = props.maxPrice >= 0;
+  const fallbackImageUrl = 'https://placehold.jp/36/999999/ffffff/48x48.png?text=%EF%BC%9F';
 
   const bid = async (price: number) => {
     deactiveBidButton();
@@ -98,6 +99,15 @@ export const OfferCard: React.FC<OfferCardProps> = ({
         if (lastBidder) {
           setLastBidder(lastBidder);
           return;
+        } else {
+          setLastBidder({
+            id: '',
+            data: {
+              displayName: '未認証ユーザー',
+              photoURL: '',
+            },
+          });
+          return;
         }
       }
       setLastBidder(undefined);
@@ -124,7 +134,7 @@ export const OfferCard: React.FC<OfferCardProps> = ({
           {author && (
             <div css={UserStyle} style={{ flex: '1 0 auto' }}>
               <div css={UserImageStyle}>
-                <img src={author.data.photoURL || 'https://placehold.jp/24x24.png'} alt={`${author.data.displayName} の画像`} />
+                <img src={author.data.photoURL || fallbackImageUrl} alt={`${author.data.displayName} の画像`} />
               </div>
               <p css={UserNameStyle}>{author.data.displayName}</p>
             </div>
@@ -132,7 +142,7 @@ export const OfferCard: React.FC<OfferCardProps> = ({
           {lastBidder ? (
             <div css={UserStyle} style={{ flex: '0 0 auto' }}>
               <div css={UserImageStyle}>
-                <img src={lastBidder.data.photoURL || 'https://placehold.jp/24x24.png'} alt={`${lastBidder.data.photoURL} の画像`} />
+                <img src={lastBidder.data.photoURL || fallbackImageUrl} alt={`${lastBidder.data.photoURL} の画像`} />
               </div>
               <p css={UserNameStyle}>{lastBidder.data.displayName}</p>
             </div>
