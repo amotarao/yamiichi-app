@@ -15,7 +15,7 @@ export interface AuthRedirectQuery {
 export default async (req: Request, res: Response) => {
   const { code } = req.query as AuthRedirectQuery;
   if (!code) {
-    res.status(400).end();
+    res.status(400).send('code is not existed.');
     return;
   }
 
@@ -40,11 +40,11 @@ export default async (req: Request, res: Response) => {
     };
   };
   if (!ok) {
-    res.status(403).end();
+    res.status(403).send('OAuth failed.');
     return;
   }
   if (!bot) {
-    res.status(412).end();
+    res.status(412).send('scope is not existed.');
     return;
   }
 
