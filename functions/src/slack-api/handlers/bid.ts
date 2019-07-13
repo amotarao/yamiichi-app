@@ -2,6 +2,7 @@ import { firestore } from '../../modules/firebase';
 import { OfferItemDataInterface } from '../../utils/interfaces';
 
 const offersCollection = firestore.collection('offers');
+const usersCollection = firestore.collection('users');
 
 interface bidHandlerProps {
   offerId: string;
@@ -45,6 +46,15 @@ export const bidHandler = async (props: bidHandlerProps) => {
 
   if (errors.length) {
     return false;
+  }
+
+  const userRef = usersCollection.doc(uid);
+  const userData = {
+    slackAuthed: false,
+  };
+  const existsUser = (await userRef.get()).exists;
+  if (!existsUser) {
+    await userRef.set({ userData });
   }
 
   return offerDoc.collection('biders').add({

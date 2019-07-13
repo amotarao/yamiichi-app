@@ -68,6 +68,7 @@ export default async (req: Request, res: Response) => {
     slackAccessToken: access_token,
     slackScopes: scope.split(','),
     slackUserId: user_id,
+    slackAuthed: true,
     teamRef,
   };
   const setUserDoc = userRef.set(userData, { merge: true });
