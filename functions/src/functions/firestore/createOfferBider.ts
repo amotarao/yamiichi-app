@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as moment from 'moment';
-import { firestore } from '../modules/firebase';
-import { OfferItemBiderRegistrationInterface } from '../utils/interfaces';
+import { firestore } from '../../modules/firebase';
+import { OfferItemBiderRegistrationInterface } from '../../utils/interfaces';
 
 const usersCollection = firestore.collection('users');
 

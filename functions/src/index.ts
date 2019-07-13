@@ -1,9 +1,9 @@
 import * as functions from 'firebase-functions';
 import apiApp from './api';
 import slackApiApp from './slack-api';
-import createOffer from './firestore/createOffer';
-import updateOffer from './firestore/updateOffer';
-import createOfferBider from './firestore/createOfferBider';
+import createOffer from './functions/firestore/createOffer';
+import updateOffer from './functions/firestore/updateOffer';
+import createOfferBider from './functions/firestore/createOfferBider';
 
 export const api = functions
   .runWith({

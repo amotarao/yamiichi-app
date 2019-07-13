@@ -1,8 +1,8 @@
 import { WebClient } from '@slack/web-api';
 import * as functions from 'firebase-functions';
 import * as _ from 'lodash';
-import { OfferItemDataInterface, TeamItemDataInterface } from '../utils/interfaces';
-import { updateOffer, postBidOffer } from '../utils/slack';
+import { OfferItemDataInterface, TeamItemDataInterface } from '../../utils/interfaces';
+import { updateOffer, postBidOffer } from '../../utils/slack';
 
 export default async ({ after, before }: functions.Change<FirebaseFirestore.DocumentSnapshot>) => {
   const afterData = after.data() as OfferItemDataInterface;
