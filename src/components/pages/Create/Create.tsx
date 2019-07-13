@@ -119,13 +119,15 @@ export const Create: React.FC<CreateProps> = ({ className, create, success, canc
               value={initialPrice === null ? '' : initialPrice}
               required
               inputProps={{
+                max: 1000000,
                 min: 0,
                 step: 1,
               }}
               onChange={(event) => {
                 const value = event.target.value.replace(/[\D]/g, '');
-                if (isNaN(Number(value))) {
+                if (isNaN(Number(value)) || value === '') {
                   setInitialPrice(null);
+                  return;
                 }
                 setInitialPrice(Number(value));
               }}
@@ -138,13 +140,15 @@ export const Create: React.FC<CreateProps> = ({ className, create, success, canc
               label="即決価格"
               value={maxPrice === null ? '' : maxPrice}
               inputProps={{
+                max: 1000000,
                 min: 0,
                 step: 1,
               }}
               onChange={(event) => {
                 const value = event.target.value.replace(/[\D]/g, '');
-                if (isNaN(Number(value))) {
+                if (isNaN(Number(value)) || value === '') {
                   setMaxPrice(null);
+                  return;
                 }
                 setMaxPrice(Number(value));
               }}
