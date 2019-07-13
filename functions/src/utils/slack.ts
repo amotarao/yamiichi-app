@@ -4,6 +4,14 @@ import { OfferItemDataInterface, OfferItemRegistrationInterface } from './interf
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
+const parseId = (ref: FirebaseFirestore.DocumentReference | null): string => {
+  if (!ref) {
+    return '';
+  }
+  const matches = ref.id.match(/slack:.+-(.+)/);
+  return matches ? matches[1] : '';
+};
+
 interface postCreateOfferProps {
   channel: string;
   id: string;
@@ -38,11 +46,8 @@ interface updateOfferProps {
 }
 
 export const updateOffer = (client: WebClient, { channel, ts, id, finished = false, item }: updateOfferProps) => {
-  const authorMatches = item.authorRef.id.match(/slack:.+-(.+)/);
-  const author = authorMatches ? authorMatches[1] : '';
-
-  const lastBidderMatches = item.lastBidderRef!.id.match(/slack:.+-(.+)/);
-  const lastBidder = lastBidderMatches ? lastBidderMatches[1] : '';
+  const author = parseId(item.authorRef);
+  const lastBidder = parseId(item.lastBidderRef);
 
   const blocks = [
     ...generateTitles({ ...item, finished }),
@@ -70,8 +75,7 @@ interface postBidOfferProps {
 }
 
 export const postBidOffer = (client: WebClient, { channel, thread_ts, finished = false, item }: postBidOfferProps) => {
-  const lastBidderMatches = item.lastBidderRef!.id.match(/slack:.+-(.+)/);
-  const lastBidder = lastBidderMatches ? lastBidderMatches[1] : '';
+  const lastBidder = parseId(item.lastBidderRef);
 
   const text = finished
     ? lastBidder
