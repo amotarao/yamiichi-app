@@ -61,14 +61,14 @@ app.post('/action', async (req, res) => {
   switch (action_id) {
     case 'bid_button':
     case 'bid_select': {
-      const result = await bidHandler({
+      const { error, result } = await bidHandler({
         offerId: value1,
         teamId: team.id,
         userId: user.id,
         value: value2,
       });
-      if (result.error) {
-        res.status(200).send(result.result);
+      if (error) {
+        res.status(200).send(result);
         return;
       }
       res.status(200).end();

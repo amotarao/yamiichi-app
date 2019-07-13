@@ -10,6 +10,54 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
 
   const diff = _.omitBy(afterData, (value, key) => beforeData[key as keyof OfferItemDataInterface] === value);
 
+  if ('finished' in diff) {
+    console.log('finished');
+
+    const originalPost = await after.ref
+      .collection('posts')
+      .where('type', '==', 'createOffer')
+      .where('service', '==', 'slack')
+      .limit(1)
+      .get();
+    const {
+      slack: { ts: originalTs },
+    } = originalPost.docs[0].data();
+
+    const team = await afterData.teamRef.get();
+    const { slackBotAccessToken, slackDefaultChannel } = team.data() as TeamItemDataInterface;
+    const client = new WebClient(slackBotAccessToken);
+
+    const updateOfferPromise = updateOffer(client, {
+      channel: slackDefaultChannel,
+      ts: originalTs,
+      id: after.id,
+      finished: true,
+      item: afterData,
+    });
+
+    const postBidOfferPromise = postBidOffer(client, {
+      channel: slackDefaultChannel,
+      thread_ts: originalTs,
+      finished: true,
+      item: afterData,
+    });
+
+    const [{ ok, channel = null, ts = null, ...postResult }] = await Promise.all([updateOfferPromise, postBidOfferPromise]);
+    console.log({ ok, channel, ts, ...postResult });
+
+    await after.ref.collection('posts').add({
+      type: 'successBidOffer',
+      service: 'slack',
+      slack: {
+        ok,
+        channel,
+        ts,
+      },
+    });
+
+    return;
+  }
+
   if ('currentPrice' in diff) {
     if (afterData.maxPrice >= 0 && afterData.maxPrice <= afterData.currentPrice) {
       await after.ref.set(
@@ -18,49 +66,6 @@ export default async ({ after, before }: functions.Change<FirebaseFirestore.Docu
         },
         { merge: true }
       );
-
-      const originalPost = await after.ref
-        .collection('posts')
-        .where('type', '==', 'createOffer')
-        .where('service', '==', 'slack')
-        .limit(1)
-        .get();
-      const {
-        slack: { ts: originalTs },
-      } = originalPost.docs[0].data();
-
-      const team = await afterData.teamRef.get();
-      const { slackBotAccessToken, slackDefaultChannel } = team.data() as TeamItemDataInterface;
-      const client = new WebClient(slackBotAccessToken);
-
-      const updateOfferPromise = updateOffer(client, {
-        channel: slackDefaultChannel,
-        ts: originalTs,
-        id: after.id,
-        finished: true,
-        item: afterData,
-      });
-
-      const postBidOfferPromise = postBidOffer(client, {
-        channel: slackDefaultChannel,
-        thread_ts: originalTs,
-        finished: true,
-        item: afterData,
-      });
-
-      const [{ ok, channel = null, ts = null, ...postResult }] = await Promise.all([updateOfferPromise, postBidOfferPromise]);
-      console.log({ ok, channel, ts, ...postResult });
-
-      await after.ref.collection('posts').add({
-        type: 'successBidOffer',
-        service: 'slack',
-        slack: {
-          ok,
-          channel,
-          ts,
-        },
-      });
-
       return;
     } else {
       const originalPost = await after.ref

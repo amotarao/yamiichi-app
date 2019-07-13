@@ -74,7 +74,9 @@ export const postBidOffer = (client: WebClient, { channel, thread_ts, finished =
   const lastBidder = lastBidderMatches ? lastBidderMatches[1] : '';
 
   const text = finished
-    ? `<@${lastBidder}> が ¥ ${item.currentPrice.toLocaleString()} で落札`
+    ? lastBidder
+      ? `<@${lastBidder}> が ¥ ${item.currentPrice.toLocaleString()} で落札`
+      : '落札者なしで終了しました'
     : `<@${lastBidder}> が ¥ ${item.currentPrice.toLocaleString()} で入札`;
 
   return client.chat.postMessage({
@@ -203,6 +205,13 @@ export const generateOfferFields = ({
     fields.push({
       type: 'mrkdwn',
       text: finished ? `落札者\n*<@${lastBidder}>*` : `最終入札者\n*<@${lastBidder}>*`,
+    });
+  }
+
+  if (finished && !lastBidder) {
+    fields.push({
+      type: 'mrkdwn',
+      text: '落札者\n*なし*',
     });
   }
 

@@ -12,7 +12,7 @@ interface bidHandlerProps {
   value: string;
 }
 
-export const bidHandler = async (props: bidHandlerProps): { error: boolean; result: FirebaseFirestore.DocumentReference | string } => {
+export const bidHandler = async (props: bidHandlerProps): Promise<{ error: boolean; result: FirebaseFirestore.DocumentReference | string }> => {
   const now = new Date();
 
   const offerId = props.offerId;
