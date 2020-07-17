@@ -24,7 +24,7 @@
   "devDependencies": {
     "@types/body-parser": "^1.17.0",
     "@types/express": "^4.17.0",
-    "lodash": "^4.17.14",
+    "lodash": "^4.17.19",
     "typescript": "^3.5.3"
   },
   "private": true
